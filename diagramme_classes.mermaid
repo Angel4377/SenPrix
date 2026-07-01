@@ -1,0 +1,176 @@
+classDiagram
+    direction TB
+
+    class User {
+        +Long id
+        +String name
+        +String email
+        +String password
+        +Role role
+        +String region
+        +LocalDateTime createdAt
+    }
+
+    class Product {
+        +Long id
+        +String name
+        +String category
+        +String unit
+    }
+
+    class Region {
+        +Long id
+        +String name
+    }
+
+    class OfficialPrice {
+        +Long id
+        +Double price
+        +String currency
+        +LocalDate validFrom
+        +LocalDate validTo
+        +LocalDateTime createdAt
+    }
+
+    class Report {
+        +Long id
+        +Double priceObserved
+        +Double officialPrice
+        +Double lat
+        +Double lng
+        +String description
+        +ReportStatus status
+        +Priority priority
+        +Integer confirmationCount
+        +LocalDateTime createdAt
+    }
+
+    class Merchant {
+        +Long id
+        +String name
+        +String address
+        +Double lat
+        +Double lng
+        +String status
+    }
+
+    class Mission {
+        +Long id
+        +String title
+        +String description
+        +MissionStatus status
+        +LocalDate scheduledDate
+        +LocalDateTime createdAt
+    }
+
+    class Infraction {
+        +Long id
+        +String description
+        +Double fineAmount
+        +InfractionStatus status
+        +LocalDateTime createdAt
+    }
+
+    class Notification {
+        +Long id
+        +String message
+        +String type
+        +Boolean isRead
+        +LocalDateTime createdAt
+    }
+
+    class RefreshToken {
+        +Long id
+        +String token
+        +Instant expiresAt
+        +Boolean revoked
+    }
+
+    class AuditLog {
+        +Long id
+        +AuditAction action
+        +Long userId
+        +String userEmail
+        +String resource
+        +Long resourceId
+        +String ipAddress
+        +String details
+        +LocalDateTime createdAt
+    }
+
+    class Role {
+        <<enumeration>>
+        ADMIN
+        CONSUMER
+        AGENT
+        MERCHANT
+    }
+
+    class ReportStatus {
+        <<enumeration>>
+        PENDING
+        VERIFIED
+        RESOLVED
+        REJECTED
+    }
+
+    class Priority {
+        <<enumeration>>
+        LOW
+        NORMAL
+        HIGH
+        CRITICAL
+    }
+
+    class MissionStatus {
+        <<enumeration>>
+        PLANNED
+        IN_PROGRESS
+        COMPLETED
+    }
+
+    class InfractionStatus {
+        <<enumeration>>
+        OPEN
+        CLOSED
+    }
+
+    class AuditAction {
+        <<enumeration>>
+        LOGIN
+        LOGIN_FAILED
+        LOGOUT
+        REGISTER
+        TOKEN_REFRESHED
+        REPORT_CREATED
+        REPORT_VALIDATED
+        INFRACTION_RECORDED
+    }
+
+    %% ─── Associations entités ───────────────────────────
+    User "1" --> "*" OfficialPrice : setBy
+    User "1" --> "*" Report : consumer
+    User "1" --> "*" Mission : agent
+    User "1" --> "*" Infraction : agent
+    User "1" --> "*" Notification : user
+    User "1" --> "*" RefreshToken : user
+    User "1" --> "*" Merchant : user
+
+    Product "1" --> "*" OfficialPrice : product
+    Product "1" --> "*" Report : product
+
+    Region "1" --> "*" OfficialPrice : region
+    Region "1" --> "*" Report : region
+    Region "1" --> "*" Merchant : region
+    Region "1" --> "*" Mission : region
+
+    Report "1" --> "*" Infraction : report
+    Merchant "0..1" --> "*" Report : merchant
+    Merchant "0..1" --> "*" Infraction : merchant
+
+    %% ─── Associations énumérations ──────────────────────
+    User --> Role
+    Report --> ReportStatus
+    Report --> Priority
+    Mission --> MissionStatus
+    Infraction --> InfractionStatus

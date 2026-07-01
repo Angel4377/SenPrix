@@ -1,0 +1,246 @@
+# ============================================================
+# CI Pipeline – MarketWatch Sénégal
+# Déclenchement : push sur main/develop, Pull Requests
+# ============================================================
+name: CI – Build & Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  JAVA_VERSION: '17'
+  NODE_VERSION: '20'
+  REGISTRY: docker.io
+  IMAGE_BACKEND: ${{ secrets.DOCKERHUB_USERNAME }}/marketwatch-backend
+  IMAGE_FRONTEND: ${{ secrets.DOCKERHUB_USERNAME }}/marketwatch-frontend
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Job 1 : Build et tests du Backend Spring Boot
+  # ─────────────────────────────────────────────
+  backend:
+    name: Backend – Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: marketwatch_db
+          POSTGRES_USER: marketwatch_user
+          POSTGRES_PASSWORD: marketwatch_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U marketwatch_user -d marketwatch_db"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: ☕ Configuration JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: 🔨 Compilation Maven
+        working-directory: backend
+        run: mvn compile -q
+
+      - name: 🧪 Exécution des tests
+        working-directory: backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/marketwatch_db
+          SPRING_DATASOURCE_USERNAME: marketwatch_user
+          SPRING_DATASOURCE_PASSWORD: marketwatch_pass
+          SPRING_DATA_REDIS_HOST: localhost
+          SPRING_DATA_REDIS_PORT: 6379
+          APP_JWT_SECRET: ci-test-secret-key-for-github-actions-only
+          APP_FIREBASE_ENABLED: false
+        run: mvn test -q
+
+      - name: 📦 Package JAR
+        working-directory: backend
+        run: mvn package -DskipTests -q
+
+      - name: 💾 Upload artefact JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target/*.jar
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # Job 2 : Build et lint du Frontend React
+  # ─────────────────────────────────────────────
+  frontend:
+    name: Frontend – Build & TypeCheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: 🟩 Configuration Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Installation des dépendances
+        working-directory: frontend
+        run: npm ci
+
+      - name: 🔍 Vérification TypeScript
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: 🏗️ Build de production
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: /api
+        run: npm run build
+
+      - name: 💾 Upload artefact dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # Job 3 : Build des images Docker (sans push)
+  # ─────────────────────────────────────────────
+  docker-build:
+    name: Docker – Build images
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: ⬇️ Téléchargement JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target/
+
+      - name: 🐳 Configuration Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏗️ Build image Backend (sans push)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: ${{ env.IMAGE_BACKEND }}:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 🏗️ Build image Frontend (sans push)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: ${{ env.IMAGE_FRONTEND }}:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─────────────────────────────────────────────
+  # Job 4 : Scan de sécurité Trivy (CVE)
+  # ─────────────────────────────────────────────
+  security-scan:
+    name: Sécurité – Scan Trivy
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - name: 📥 Checkout du code
+        uses: actions/checkout@v4
+
+      - name: ⬇️ Téléchargement JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target/
+
+      - name: 🐳 Configuration Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏗️ Build image Backend pour scan
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: marketwatch-backend:scan
+          load: true
+          cache-from: type=gha
+
+      - name: 🏗️ Build image Frontend pour scan
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: marketwatch-frontend:scan
+          load: true
+          cache-from: type=gha
+
+      - name: 🔍 Scan Trivy – image Backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'marketwatch-backend:scan'
+          format: 'sarif'
+          output: 'trivy-backend.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'   # Ne bloque pas le CI, remplacer par '1' pour bloquer
+
+      - name: 🔍 Scan Trivy – image Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'marketwatch-frontend:scan'
+          format: 'sarif'
+          output: 'trivy-frontend.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+      - name: 📤 Upload résultats SARIF (Backend)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-backend.sarif'
+          category: 'trivy-backend'
+
+      - name: 📤 Upload résultats SARIF (Frontend)
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-frontend.sarif'
+          category: 'trivy-frontend'
+
+      - name: 🔍 Scan Trivy – fichiers système (IaC)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM'

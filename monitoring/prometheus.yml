@@ -1,0 +1,55 @@
+# ============================================================
+# Prometheus – Configuration MarketWatch Sénégal
+# Scrape interval global : 15s
+# ============================================================
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    project: 'marketwatch'
+    environment: 'local'
+
+# ─────────────────────────────────────────────
+# Règles d'alertes (à compléter selon les besoins)
+# ─────────────────────────────────────────────
+rule_files:
+  - "alerts.yml"
+
+# ─────────────────────────────────────────────
+# Cibles de collecte (scrape configs)
+# ─────────────────────────────────────────────
+scrape_configs:
+
+  # Prometheus lui-même
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Backend Spring Boot – Actuator /actuator/prometheus
+  - job_name: 'marketwatch-backend'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['backend:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'marketwatch-backend'
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'marketwatch-postgres'
+
+  # Redis Exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'marketwatch-redis'

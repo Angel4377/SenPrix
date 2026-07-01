@@ -1,0 +1,14 @@
+# ============================================================
+# Grafana – Provisioning dashboards
+# ============================================================
+apiVersion: 1
+
+providers:
+  - name: 'MarketWatch Dashboards'
+    orgId: 1
+    folder: 'MarketWatch'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

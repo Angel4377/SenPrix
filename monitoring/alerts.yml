@@ -1,0 +1,78 @@
+# ============================================================
+# Règles d'alertes Prometheus – MarketWatch Sénégal
+# ============================================================
+groups:
+  - name: marketwatch.backend
+    rules:
+
+      # Backend indisponible
+      - alert: BackendDown
+        expr: up{job="marketwatch-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend MarketWatch indisponible"
+          description: "L'API Spring Boot ne répond plus depuis 1 minute."
+
+      # Latence élevée (p99 > 2s)
+      - alert: HighResponseLatency
+        expr: histogram_quantile(0.99, rate(http_server_requests_seconds_bucket{job="marketwatch-backend"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence API élevée (p99 > 2s)"
+          description: "Le percentile 99 de latence dépasse 2 secondes depuis 5 minutes."
+
+      # Taux d'erreur HTTP 5xx > 5%
+      - alert: HighErrorRate
+        expr: |
+          rate(http_server_requests_seconds_count{job="marketwatch-backend",status=~"5.."}[5m])
+          /
+          rate(http_server_requests_seconds_count{job="marketwatch-backend"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taux d'erreurs HTTP 5xx élevé"
+          description: "Plus de 5% des requêtes retournent une erreur 5xx."
+
+  - name: marketwatch.database
+    rules:
+
+      # PostgreSQL indisponible
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL indisponible"
+          description: "La base de données PostgreSQL ne répond plus."
+
+      # Redis indisponible
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis indisponible"
+          description: "Le serveur Redis ne répond plus."
+
+  - name: marketwatch.jvm
+    rules:
+
+      # Mémoire JVM > 85%
+      - alert: JvmMemoryHigh
+        expr: |
+          jvm_memory_used_bytes{job="marketwatch-backend",area="heap"}
+          /
+          jvm_memory_max_bytes{job="marketwatch-backend",area="heap"} > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mémoire JVM heap élevée"
+          description: "Utilisation heap JVM dépasse 85%."

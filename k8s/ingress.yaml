@@ -1,0 +1,51 @@
+# Nécessite nginx-ingress-controller installé dans le cluster
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: marketwatch-ingress
+  namespace: marketwatch
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # Rate limiting : protection contre les abus
+    nginx.ingress.kubernetes.io/limit-rps: "50"
+    # CORS global
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://marketwatch.dci.sn"
+    # Cert-manager pour TLS automatique (Let's Encrypt)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - marketwatch.dci.sn
+        - api.marketwatch.dci.sn
+      secretName: marketwatch-tls
+  rules:
+    # Trafic frontend
+    - host: marketwatch.dci.sn
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: marketwatch-frontend
+                port:
+                  number: 80
+
+    # Trafic API backend
+    - host: api.marketwatch.dci.sn
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: marketwatch-backend
+                port:
+                  number: 8080

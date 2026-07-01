@@ -1,0 +1,212 @@
+# ============================================================
+# MarketWatch Sénégal – Docker Compose Full Stack
+# Développement local : docker compose up -d
+# Pour dev sans rebuild backend/frontend :
+#   docker compose up postgres redis -d
+# Avec monitoring :
+#   docker compose --profile monitoring up -d
+# ============================================================
+version: '3.9'
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Base de données PostgreSQL 15
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: marketwatch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: marketwatch_db
+      POSTGRES_USER: marketwatch_user
+      POSTGRES_PASSWORD: marketwatch_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketwatch_user -d marketwatch_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Cache Redis 7
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: marketwatch-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Backend Spring Boot 3.2.5
+  # ─────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: marketwatch-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/marketwatch_db
+      SPRING_DATASOURCE_USERNAME: marketwatch_user
+      SPRING_DATASOURCE_PASSWORD: marketwatch_pass
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      APP_JWT_SECRET: local-dev-secret-key-change-in-production
+      APP_FIREBASE_ENABLED: "false"
+      # Activer les métriques Prometheus via Actuator
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics,prometheus
+      MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Frontend React (Nginx)
+  # ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: marketwatch-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Exporteur PostgreSQL → métriques Prometheus
+  # Profile : monitoring
+  # ─────────────────────────────────────────────
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: marketwatch-postgres-exporter
+    restart: unless-stopped
+    profiles: [monitoring]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATA_SOURCE_NAME: "postgresql://marketwatch_user:marketwatch_pass@postgres:5432/marketwatch_db?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Exporteur Redis → métriques Prometheus
+  # Profile : monitoring
+  # ─────────────────────────────────────────────
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: marketwatch-redis-exporter
+    restart: unless-stopped
+    profiles: [monitoring]
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_ADDR: redis:6379
+    ports:
+      - "9121:9121"
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Prometheus – collecte des métriques
+  # Profile : monitoring
+  # ─────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: marketwatch-prometheus
+    restart: unless-stopped
+    profiles: [monitoring]
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - marketwatch-net
+
+  # ─────────────────────────────────────────────
+  # Grafana – tableaux de bord
+  # Profile : monitoring
+  # ─────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: marketwatch-grafana
+    restart: unless-stopped
+    profiles: [monitoring]
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: marketwatch2024
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: "http://localhost:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - marketwatch-net
+
+# ─────────────────────────────────────────────
+# Volumes persistants
+# ─────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# ─────────────────────────────────────────────
+# Réseau interne
+# ─────────────────────────────────────────────
+networks:
+  marketwatch-net:
+    driver: bridge
