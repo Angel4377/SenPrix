@@ -173,6 +173,9 @@ jobs:
     name: Sécurité – Scan Trivy
     runs-on: ubuntu-latest
     needs: [backend, frontend]
+    permissions:
+      security-events: write
+      contents: read
 
     steps:
       - name: 📥 Checkout du code
@@ -197,6 +200,8 @@ jobs:
           cache-from: type=gha
 
       - name: 🏗️ Build image Frontend pour scan
+        id: build-frontend-scan
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
@@ -212,9 +217,10 @@ jobs:
           format: 'sarif'
           output: 'trivy-backend.sarif'
           severity: 'CRITICAL,HIGH'
-          exit-code: '0'   # Ne bloque pas le CI, remplacer par '1' pour bloquer
+          exit-code: '0'
 
       - name: 🔍 Scan Trivy – image Frontend
+        if: steps.build-frontend-scan.outcome == 'success'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'marketwatch-frontend:scan'
@@ -225,14 +231,14 @@ jobs:
 
       - name: 📤 Upload résultats SARIF (Backend)
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-backend.sarif') != ''
         with:
           sarif_file: 'trivy-backend.sarif'
           category: 'trivy-backend'
 
       - name: 📤 Upload résultats SARIF (Frontend)
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-frontend.sarif') != ''
         with:
           sarif_file: 'trivy-frontend.sarif'
           category: 'trivy-frontend'

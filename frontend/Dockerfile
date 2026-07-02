@@ -1,13 +1,13 @@
 # ────────────────────────────────────────────────
 # Stage 1 : Build avec Node.js
 # ────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
 # Copier package.json en premier pour le cache
 COPY package*.json ./
-RUN npm ci --silent
+RUN npm ci
 
 # Copier le code source et construire
 COPY . .
