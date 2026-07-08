@@ -20,13 +20,6 @@ export default function Notifications() {
 
   const unread = notifs.filter(n => !n.isRead).length
 
-  const typeIcon = {
-    success: '✅',
-    alert:   '🚨',
-    warning: '⚠️',
-    info:    'ℹ️',
-  }
-
   const typeBg = {
     success: 'border-l-green-500 bg-green-50',
     alert:   'border-l-red-500 bg-red-50',
@@ -52,14 +45,13 @@ export default function Notifications() {
             onClick={markAllRead}
             className="text-sm text-blue-600 hover:text-blue-800 font-medium border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
           >
-            ✓ Tout marquer comme lu
+             Tout marquer comme lu
           </button>
         )}
       </div>
 
       {notifs.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <p className="text-4xl mb-3">🔔</p>
           <p className="text-gray-500">Aucune notification pour le moment.</p>
         </div>
       ) : (
@@ -71,7 +63,6 @@ export default function Notifications() {
                 n.isRead ? 'opacity-60' : ''
               } ${typeBg[n.type] || 'border-l-gray-300'}`}
             >
-              <span className="text-xl flex-shrink-0">{typeIcon[n.type] || 'ℹ️'}</span>
               <div className="flex-1">
                 <p className={`text-sm ${n.isRead ? 'text-gray-500' : 'text-gray-800 font-medium'}`}>
                   {n.message}

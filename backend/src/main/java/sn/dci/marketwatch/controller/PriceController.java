@@ -42,6 +42,13 @@ public class PriceController {
         return ResponseEntity.ok(priceRepo.findAllCurrent().stream().map(this::toMap).toList());
     }
 
+    /** GET /api/admin/prices/history — Admin seul : prix antérieurs (remplacés) */
+    @GetMapping("/admin/prices/history")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getPriceHistory() {
+        return ResponseEntity.ok(priceRepo.findAllHistory().stream().map(this::toMap).toList());
+    }
+
     /** POST /api/admin/prices – Admin seul */
     @PostMapping("/admin/prices")
     @PreAuthorize("hasRole('ADMIN')")
@@ -117,6 +124,8 @@ public class PriceController {
         m.put("regionName", op.getRegion().getName());
         m.put("price", op.getPrice());
         m.put("validFrom", op.getValidFrom());
+        m.put("validTo", op.getValidTo());
+        m.put("setBy", op.getSetBy() != null ? op.getSetBy().getName() : null);
         return m;
     }
 }

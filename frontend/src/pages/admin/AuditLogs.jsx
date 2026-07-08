@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react'
 import api from '../../api/axios'
-import { HiOutlineClipboardList } from "react-icons/hi";
 
 const ACTION_META = {
-  LOGIN:             { label: 'Connexion',          color: 'bg-green-100 text-green-700',  icon: '🔐' },
-  LOGIN_FAILED:      { label: 'Échec connexion',    color: 'bg-red-100 text-red-700',      icon: '🚫' },
-  LOGOUT:            { label: 'Déconnexion',         color: 'bg-gray-100 text-gray-600',    icon: '🚪' },
-  REGISTER:          { label: 'Inscription',         color: 'bg-blue-100 text-blue-700',    icon: '👤' },
-  TOKEN_REFRESHED:   { label: 'Token renouvelé',    color: 'bg-purple-100 text-purple-700', icon: '🔄' },
-  REPORT_CREATED:    { label: 'Signalement créé',   color: 'bg-yellow-100 text-yellow-700', icon: '📝' },
-  REPORT_CONFIRMED:  { label: 'Signalement confirmé', color: 'bg-teal-100 text-teal-700',  icon: '✅' },
-  REPORT_VALIDATED:  { label: 'Signalement validé', color: 'bg-green-100 text-green-700',  icon: '✔️' },
-  REPORT_REJECTED:   { label: 'Signalement rejeté', color: 'bg-red-100 text-red-700',      icon: '❌' },
-  REPORT_RESOLVED:   { label: 'Signalement résolu', color: 'bg-green-100 text-green-700',  icon: '🏁' },
-  MISSION_CREATED:   { label: 'Mission créée',      color: 'bg-indigo-100 text-indigo-700', icon: '🎯' },
-  MISSION_COMPLETED: { label: 'Mission terminée',   color: 'bg-indigo-100 text-indigo-700', icon: '🏅' },
-  INFRACTION_RECORDED: { label: 'Infraction',       color: 'bg-orange-100 text-orange-700', icon: '⚖️' },
-  PRICE_IMPORTED:    { label: 'Import prix',         color: 'bg-blue-100 text-blue-700',    icon: '📂' },
-  ACCESS_DENIED:     { label: 'Accès refusé',        color: 'bg-red-100 text-red-700',      icon: '🔒' },
-  INVALID_TOKEN:     { label: 'Token invalide',      color: 'bg-red-100 text-red-700',      icon: '⚠️' },
+  LOGIN:             { label: 'Connexion',          color: 'bg-green-100 text-green-700' },
+  LOGIN_FAILED:      { label: 'Échec connexion',    color: 'bg-red-100 text-red-700' },
+  LOGOUT:            { label: 'Déconnexion',         color: 'bg-gray-100 text-gray-600' },
+  REGISTER:          { label: 'Inscription',         color: 'bg-blue-100 text-blue-700' },
+  TOKEN_REFRESHED:   { label: 'Token renouvelé',    color: 'bg-purple-100 text-purple-700' },
+  REPORT_CREATED:    { label: 'Signalement créé',   color: 'bg-yellow-100 text-yellow-700' },
+  REPORT_CONFIRMED:  { label: 'Signalement confirmé', color: 'bg-teal-100 text-teal-700' },
+  REPORT_VALIDATED:  { label: 'Signalement validé', color: 'bg-green-100 text-green-700' },
+  REPORT_REJECTED:   { label: 'Signalement rejeté', color: 'bg-red-100 text-red-700' },
+  REPORT_RESOLVED:   { label: 'Signalement résolu', color: 'bg-green-100 text-green-700' },
+  MISSION_CREATED:   { label: 'Mission créée',      color: 'bg-indigo-100 text-indigo-700' },
+  MISSION_COMPLETED: { label: 'Mission terminée',   color: 'bg-indigo-100 text-indigo-700' },
+  INFRACTION_RECORDED: { label: 'Infraction',       color: 'bg-orange-100 text-orange-700' },
+  PRICE_IMPORTED:    { label: 'Import prix',         color: 'bg-blue-100 text-blue-700' },
+  ACCESS_DENIED:     { label: 'Accès refusé',        color: 'bg-red-100 text-red-700' },
+  INVALID_TOKEN:     { label: 'Token invalide',      color: 'bg-red-100 text-red-700' },
 }
 
 const CATEGORIES = {
@@ -113,21 +112,20 @@ export default function AuditLogs() {
         </div>
         <button onClick={exportCSV}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm">
-          📊 Exporter CSV
+          Exporter CSV
         </button>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: '📋', label: 'Total logs', value: logs.length, color: 'bg-blue-50 border-blue-200' },
-          { icon: '📅', label: "Aujourd'hui", value: todayLogs.length, color: 'bg-green-50 border-green-200' },
-          { icon: '🚨', label: 'Alertes sécurité', value: securityAlerts.length, color: 'bg-red-50 border-red-200' },
-          { icon: '🌐', label: 'IPs distinctes', value: uniqueIps, color: 'bg-purple-50 border-purple-200' },
-        ].map(({ icon, label, value, color }) => (
+          { label: 'Total logs', value: logs.length, color: 'bg-blue-50 border-blue-200' },
+          { label: "Aujourd'hui", value: todayLogs.length, color: 'bg-green-50 border-green-200' },
+          { label: 'Alertes sécurité', value: securityAlerts.length, color: 'bg-red-50 border-red-200' },
+          { label: 'IPs distinctes', value: uniqueIps, color: 'bg-purple-50 border-purple-200' },
+        ].map(({ label, value, color }) => (
           <div key={label} className={`rounded-xl border p-4 ${color}`}>
-            <div className="flex items-center gap-2 mb-1">
-              <span>{icon}</span>
+            <div className="mb-1">
               <span className="text-xs text-gray-500">{label}</span>
             </div>
             <p className="text-2xl font-black text-gray-800">{value}</p>
@@ -183,7 +181,7 @@ export default function AuditLogs() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {paginated.map(log => {
-                    const meta = ACTION_META[log.action] || { label: log.action, color: 'bg-gray-100 text-gray-600', icon: '📌' }
+                    const meta = ACTION_META[log.action] || { label: log.action, color: 'bg-gray-100 text-gray-600' }
                     const isExpanded = expanded === log.id
                     return (
                       <tr key={log.id}
@@ -197,7 +195,7 @@ export default function AuditLogs() {
                         </td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${meta.color}`}>
-                            {meta.icon} {meta.label}
+                            {meta.label}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-gray-700 max-w-[160px] truncate" title={log.userEmail}>
@@ -220,7 +218,7 @@ export default function AuditLogs() {
             {/* Mobile cards */}
             <div className="md:hidden divide-y divide-gray-100">
               {paginated.map(log => {
-                const meta = ACTION_META[log.action] || { label: log.action, color: 'bg-gray-100 text-gray-600', icon: '📌' }
+                const meta = ACTION_META[log.action] || { label: log.action, color: 'bg-gray-100 text-gray-600' }
                 return (
                   <div key={log.id}
                        onClick={() => setExpanded(expanded === log.id ? null : log.id)}
@@ -235,8 +233,8 @@ export default function AuditLogs() {
                     </div>
                     <p className="text-sm text-gray-700 mt-2">{log.userEmail || 'anonyme'}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                      <span>🌐 {log.ipAddress}</span>
-                      {log.resource && <span>📄 {log.resource} #{log.resourceId}</span>}
+                      <span>{log.ipAddress}</span>
+                      {log.resource && <span>{log.resource} #{log.resourceId}</span>}
                     </div>
                     {expanded === log.id && (
                       <div className="mt-2 text-xs text-gray-500 bg-gray-50 rounded p-2">

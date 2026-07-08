@@ -3,10 +3,10 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const DEMO = [
-  { label: 'Admin DCI',     icon: '🛡️', email: 'admin@dci.sn',     password: 'admin123',    color: 'purple' },
-  { label: 'Consommateur',  icon: '👤', email: 'consumer@test.sn',  password: 'consumer123', color: 'blue' },
-  { label: 'Agent Brigade', icon: '🚔', email: 'agent@dci.sn',      password: 'agent123',    color: 'orange' },
-  { label: 'Commerçant',    icon: '🏪', email: 'merchant@test.sn',  password: 'merchant123', color: 'green' },
+  { label: 'Admin DCI',     email: 'admin@dci.sn',     password: 'admin123',    color: 'purple' },
+  { label: 'Consommateur',  email: 'consumer@test.sn',  password: 'consumer123', color: 'blue' },
+  { label: 'Agent Brigade', email: 'agent@dci.sn',      password: 'agent123',    color: 'orange' },
+  { label: 'Commerçant',    email: 'merchant@test.sn',  password: 'merchant123', color: 'green' },
 ]
 
 const colorMap = {
@@ -57,9 +57,9 @@ export default function Login() {
         {/* Logo */}
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-2">
-            <img src="/logo.svg" alt="SénPrix Logo" className="w-14 h-14 rounded-2xl shadow-lg"/>
+            <img src="/logo.svg" alt="Sama Prix Logo" className="w-14 h-14 rounded-2xl shadow-lg"/>
             <div>
-              <h1 className="text-white font-black text-2xl tracking-tight">SénPrix</h1>
+              <h1 className="text-white font-black text-2xl tracking-tight">Sama Prix</h1>
               <p className="text-green-300 text-xs font-medium">Surveillance des marchés · Sénégal</p>
             </div>
           </div>
@@ -92,9 +92,9 @@ export default function Login() {
 
         {/* Logo mobile uniquement */}
         <div className="lg:hidden flex items-center gap-3 mb-8">
-          <img src="/logo.svg" alt="SénPrix Logo" className="w-12 h-12 rounded-xl shadow"/>
+          <img src="/logo.svg" alt="Sama Prix Logo" className="w-12 h-12 rounded-xl shadow"/>
           <div>
-            <h1 className="font-black text-gray-800 text-lg">SénPrix</h1>
+            <h1 className="font-black text-gray-800 text-lg">Sama Prix</h1>
             <p className="text-green-600 text-xs">Surveillance des marchés · Sénégal</p>
           </div>
         </div>
@@ -110,7 +110,6 @@ export default function Login() {
           {/* Erreur */}
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-5 text-sm">
-              <span className="text-base">❌</span>
               <span>{error}</span>
             </div>
           )}
@@ -190,7 +189,6 @@ export default function Login() {
                   className={`text-left p-2.5 rounded-xl border transition-all hover:scale-[1.02] active:scale-100 ${colorMap[d.color]}`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-base">{d.icon}</span>
                     <div>
                       <p className="text-xs font-bold leading-tight">{d.label}</p>
                       <p className="text-xs opacity-50 font-mono">{d.password}</p>

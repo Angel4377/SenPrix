@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-le
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import api from '../../api/axios'
+import { prioriteLabel } from '../../utils/labels'
 
 // Fix Leaflet icon avec Vite
 delete L.Icon.Default.prototype._getIconUrl
@@ -29,7 +30,7 @@ const priorityIcon = (priority, selected = false) => L.divIcon({
 const merchantIcon = L.divIcon({
   className: '',
   html: `<div style="width:20px;height:20px;border-radius:4px;background:#15803d;border:2px solid white;
-    box-shadow:0 0 4px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:11px;">🏪</div>`,
+    box-shadow:0 0 4px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:11px;"></div>`,
   iconSize: [20, 20], iconAnchor: [10, 10],
 })
 
@@ -111,13 +112,12 @@ export default function AdminMap() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         {[
-          { label: 'Signalements', value: stats.total,    color: 'text-blue-600',   bg: 'bg-blue-50',   icon: '📍' },
-          { label: 'Critiques',    value: stats.critical, color: 'text-red-600',    bg: 'bg-red-50',    icon: '🚨' },
-          { label: 'Haute prior.', value: stats.high,     color: 'text-orange-600', bg: 'bg-orange-50', icon: '⬆️' },
-          { label: 'En attente',   value: stats.pending,  color: 'text-yellow-600', bg: 'bg-yellow-50', icon: '🕐' },
+          { label: 'Signalements', value: stats.total,    color: 'text-blue-600',   bg: 'bg-blue-50' },
+          { label: 'Critiques',    value: stats.critical, color: 'text-red-600',    bg: 'bg-red-50' },
+          { label: 'Haute prior.', value: stats.high,     color: 'text-orange-600', bg: 'bg-orange-50' },
+          { label: 'En attente',   value: stats.pending,  color: 'text-yellow-600', bg: 'bg-yellow-50' },
         ].map(s => (
           <div key={s.label} className={`${s.bg} rounded-xl p-3 flex items-center gap-3`}>
-            <span className="text-xl">{s.icon}</span>
             <div>
               <p className={`text-2xl font-bold leading-none ${s.color}`}>{s.value}</p>
               <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
@@ -133,7 +133,7 @@ export default function AdminMap() {
           <button key={p} onClick={() => setFilter(p)}
             className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors
               ${filter === p ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:border-green-400'}`}>
-            {p === 'ALL' ? 'Tous' : p}
+            {p === 'ALL' ? 'Tous' : prioriteLabel(p)}
           </button>
         ))}
         <span className="text-xs font-medium text-gray-500 ml-2">Statut :</span>
@@ -165,7 +165,7 @@ export default function AdminMap() {
                 <Popup>
                   <div className="text-sm min-w-[210px]">
                     <p className="font-bold text-gray-800 mb-0.5">{r.productName}</p>
-                    <p className="text-xs text-gray-500 mb-2">📍 {r.regionName}{r.merchantName ? ' · ' + r.merchantName : ''}</p>
+                    <p className="text-xs text-gray-500 mb-2">{r.regionName}{r.merchantName ? ' · ' + r.merchantName : ''}</p>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="font-bold text-red-600">{Math.round(r.priceObserved)} F</span>
                       {r.officialPrice && <span className="text-gray-400 text-xs">officiel: {Math.round(r.officialPrice)} F</span>}
@@ -187,15 +187,15 @@ export default function AdminMap() {
                       <div className="flex gap-1">
                         <button onClick={() => quickValidate(r.id, 'VERIFIED')} disabled={validating === r.id}
                           className="flex-1 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded disabled:opacity-50">
-                          ✅ Vérifier
+                          Vérifier
                         </button>
                         <button onClick={() => quickValidate(r.id, 'RESOLVED')} disabled={validating === r.id}
                           className="flex-1 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded disabled:opacity-50">
-                          🏁 Résolu
+                          Résolu
                         </button>
                         <button onClick={() => quickValidate(r.id, 'REJECTED')} disabled={validating === r.id}
                           className="flex-1 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded disabled:opacity-50">
-                          ❌ Rejeter
+                          Rejeter
                         </button>
                       </div>
                     )}
@@ -216,10 +216,10 @@ export default function AdminMap() {
               <Marker key={`m-${m.id}`} position={[m.lat, m.lng]} icon={merchantIcon}>
                 <Popup>
                   <div className="text-sm">
-                    <p className="font-bold mb-1">🏪 {m.name}</p>
+                    <p className="font-bold mb-1">{m.name}</p>
                     <p className="text-xs text-gray-500">{m.address}</p>
                     <p className={`text-xs mt-1 font-medium ${m.status === 'active' ? 'text-green-600' : 'text-red-500'}`}>
-                      {m.status === 'active' ? '✅ Actif' : '⛔ Inactif'}
+                      {m.status === 'active' ? 'Actif' : 'Inactif'}
                     </p>
                   </div>
                 </Popup>
@@ -238,7 +238,7 @@ export default function AdminMap() {
                 <p className="text-xs text-gray-400">{fmtDate(selectedReport.createdAt)}</p>
               </div>
               <button onClick={() => setSelectedReport(null)}
-                className="text-gray-400 hover:text-gray-600 text-lg p-1 leading-none">✕</button>
+                className="text-gray-400 hover:text-gray-600 text-lg p-1 leading-none">×</button>
             </div>
 
             {/* Contenu */}
@@ -246,7 +246,7 @@ export default function AdminMap() {
               <div>
                 <p className="font-bold text-gray-800">{selectedReport.productName}</p>
                 <p className="text-sm text-gray-500">
-                  📍 {selectedReport.regionName}
+                  {selectedReport.regionName}
                   {selectedReport.merchantName && <> · <strong>{selectedReport.merchantName}</strong></>}
                 </p>
               </div>
@@ -295,7 +295,7 @@ export default function AdminMap() {
               )}
 
               {selectedReport.lat && (
-                <p className="text-xs text-gray-400">📡 {selectedReport.lat.toFixed(4)}, {selectedReport.lng.toFixed(4)}</p>
+                <p className="text-xs text-gray-400">{selectedReport.lat.toFixed(4)}, {selectedReport.lng.toFixed(4)}</p>
               )}
             </div>
 
@@ -305,17 +305,17 @@ export default function AdminMap() {
               <button onClick={() => quickValidate(selectedReport.id, 'VERIFIED')}
                 disabled={validating === selectedReport.id || selectedReport.status === 'VERIFIED'}
                 className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-semibold rounded-xl text-sm transition-colors">
-                ✅ Marquer comme Vérifié
+                Marquer comme Vérifié
               </button>
               <button onClick={() => quickValidate(selectedReport.id, 'RESOLVED')}
                 disabled={validating === selectedReport.id || selectedReport.status === 'RESOLVED'}
                 className="w-full py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white font-semibold rounded-xl text-sm transition-colors">
-                🏁 Marquer comme Résolu
+                Marquer comme Résolu
               </button>
               <button onClick={() => quickValidate(selectedReport.id, 'REJECTED')}
                 disabled={validating === selectedReport.id || selectedReport.status === 'REJECTED'}
                 className="w-full py-2.5 bg-red-500 hover:bg-red-600 disabled:opacity-40 text-white font-semibold rounded-xl text-sm transition-colors">
-                ❌ Rejeter le signalement
+                Rejeter le signalement
               </button>
             </div>
           </div>
@@ -323,7 +323,6 @@ export default function AdminMap() {
           /* Indice quand aucun signalement sélectionné */
           <div className="hidden lg:flex w-72 flex-shrink-0 bg-gray-50 rounded-xl border border-dashed border-gray-200 items-center justify-center text-center p-6">
             <div>
-              <div className="text-4xl mb-3">👆</div>
               <p className="text-gray-500 font-medium text-sm">Cliquez un marqueur sur la carte</p>
               <p className="text-gray-400 text-xs mt-1">pour voir les détails et valider l'anomalie</p>
             </div>

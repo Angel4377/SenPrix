@@ -103,7 +103,7 @@ export default function Infraction() {
     const merchant = merchants.find(m => m.id === +form.merchantId)
     const product = products.find(p => p.id === +form.productId)
     const ecart = ecartPct()
-    const content = `CONSTAT D'INFRACTION - SénPrix Sénégal
+    const content = `CONSTAT D'INFRACTION - SamaPrix Sénégal
 Direction du Commerce Intérieur (DCI)
 ======================================
 Date : ${form.dateMission}
@@ -147,7 +147,6 @@ Ce document vaut procès-verbal provisoire.
 
   if (saved) return (
     <div className="flex flex-col items-center justify-center min-h-96 space-y-4">
-      <div className="text-6xl">✅</div>
       <h2 className="text-2xl font-bold text-green-700">Constat enregistré</h2>
       <p className="text-gray-600">Le rapport PDF a été téléchargé et transmis à la DCI.</p>
       <button onClick={() => { setSaved(false); setStep(1); setForm(f => ({ ...f, merchantId: '', productId: '', prixConstate: '', description: '', photos: [] })) }}
@@ -227,7 +226,6 @@ Ce document vaut procès-verbal provisoire.
           {/* Écart calculé */}
           {form.prixConstate && form.prixOfficiel && (
             <div className={`rounded-lg p-3 flex items-center gap-3 ${ecartPct() >= 20 ? 'bg-red-50 border border-red-200' : 'bg-yellow-50 border border-yellow-200'}`}>
-              <span className="text-2xl">{ecartPct() >= 20 ? '🚨' : '⚠️'}</span>
               <div>
                 <p className={`font-bold ${ecartPct() >= 20 ? 'text-red-700' : 'text-yellow-700'}`}>
                   Écart constaté : +{ecartPct()}% par rapport au prix officiel
@@ -248,7 +246,6 @@ Ce document vaut procès-verbal provisoire.
 
           {/* Géolocalisation */}
           <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
-            <span className="text-xl">📍</span>
             {form.latitude ? (
               <p className="text-sm text-green-700 font-medium">Géolocalisation : {form.latitude}, {form.longitude}</p>
             ) : (
@@ -267,11 +264,10 @@ Ce document vaut procès-verbal provisoire.
       {/* ÉTAPE 2 : Preuves photo */}
       {step === 2 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-          <h2 className="font-semibold text-gray-800">📸 Photos / Preuves visuelles</h2>
+          <h2 className="font-semibold text-gray-800">Photos / Preuves visuelles</h2>
           <p className="text-sm text-gray-500">Photographiez le prix affiché, la marchandise, et toute preuve pertinente.</p>
 
           <label className="block border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-red-400 hover:bg-red-50 transition-colors">
-            <div className="text-4xl mb-2">📷</div>
             <p className="text-gray-600 font-medium">Appuyez pour prendre une photo ou sélectionner depuis la galerie</p>
             <p className="text-gray-400 text-xs mt-1">JPG, PNG — plusieurs fichiers acceptés</p>
             <input ref={photoRef} type="file" accept="image/*" multiple capture="environment" onChange={handlePhotoCapture} className="hidden" />
@@ -307,7 +303,7 @@ Ce document vaut procès-verbal provisoire.
       {step === 3 && (
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-800 mb-4">📋 Récapitulatif du constat</h2>
+            <h2 className="font-semibold text-gray-800 mb-4">Récapitulatif du constat</h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><span className="text-gray-500">Commerce :</span> <span className="font-medium">{merchants.find(m => m.id === +form.merchantId)?.name}</span></div>
               <div><span className="text-gray-500">Date :</span> <span className="font-medium">{form.dateMission}</span></div>
@@ -325,7 +321,7 @@ Ce document vaut procès-verbal provisoire.
           </div>
 
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm text-yellow-800">
-            ⚖️ Ce constat aura valeur de procès-verbal officiel. Un rapport PDF sera généré automatiquement et transmis à la DCI.
+            Ce constat aura valeur de procès-verbal officiel. Un rapport PDF sera généré automatiquement et transmis à la DCI.
           </div>
 
           <div className="flex gap-3">
@@ -334,7 +330,7 @@ Ce document vaut procès-verbal provisoire.
             </button>
             <button onClick={handleSubmit} disabled={generating}
               className="flex-1 py-3 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2">
-              {generating ? '⏳ Génération du PDF...' : '📄 Valider et générer le rapport PDF'}
+              {generating ? 'Génération du PDF...' : 'Valider et générer le rapport PDF'}
             </button>
           </div>
         </div>

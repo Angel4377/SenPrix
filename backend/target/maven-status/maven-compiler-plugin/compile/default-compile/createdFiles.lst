@@ -5,6 +5,7 @@ sn\dci\marketwatch\service\AuditService.class
 sn\dci\marketwatch\repository\RegionRepository.class
 sn\dci\marketwatch\controller\GamificationController.class
 sn\dci\marketwatch\controller\InfractionController.class
+sn\dci\marketwatch\entity\PrixDeclare$PrixDeclareBuilder.class
 sn\dci\marketwatch\entity\Commercant.class
 sn\dci\marketwatch\security\JwtTokenProvider.class
 sn\dci\marketwatch\entity\Notification.class
@@ -12,15 +13,18 @@ sn\dci\marketwatch\controller\MissionController.class
 sn\dci\marketwatch\entity\JournalAudit$JournalAuditBuilder.class
 sn\dci\marketwatch\controller\AuthController.class
 sn\dci\marketwatch\entity\Region$RegionBuilder.class
+sn\dci\marketwatch\controller\MerchantPriceController.class
 sn\dci\marketwatch\MarketwatchApplication.class
 sn\dci\marketwatch\security\UserDetailsImpl.class
 sn\dci\marketwatch\entity\Produit.class
+sn\dci\marketwatch\repository\PrixDeclareRepository.class
 sn\dci\marketwatch\config\CacheConfig.class
 sn\dci\marketwatch\entity\Infraction.class
 sn\dci\marketwatch\config\GlobalExceptionHandler.class
 sn\dci\marketwatch\repository\PrixOfficielRepository.class
 sn\dci\marketwatch\controller\ReportController.class
 sn\dci\marketwatch\entity\Infraction$Statut.class
+sn\dci\marketwatch\entity\PrixDeclare.class
 sn\dci\marketwatch\config\SecurityConfig.class
 sn\dci\marketwatch\entity\Region.class
 sn\dci\marketwatch\repository\ProduitRepository.class

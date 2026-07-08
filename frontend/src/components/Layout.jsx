@@ -55,12 +55,12 @@ export default function Layout() {
         <div className="flex items-center gap-3">
           <img src="/logo.svg" alt="logo" className="w-9 h-9 rounded-full shadow"/>
           <div>
-            <h1 className="text-white font-bold text-sm">SénPrix</h1>
+            <h1 className="text-white font-bold text-sm">SamaPrix</h1>
             <p className="text-green-200 text-xs">Sénégal — DCI</p>
           </div>
         </div>
         {/* Bouton fermer sur mobile */}
-        <button onClick={() => setSidebarOpen(false)} className="md:hidden text-white/60 hover:text-white text-xl leading-none">✕</button>
+        <button onClick={() => setSidebarOpen(false)} className="md:hidden text-white/60 hover:text-white text-xl leading-none">×</button>
       </div>
 
       {/* Nav */}
@@ -135,22 +135,22 @@ export default function Layout() {
         <header className="md:hidden flex items-center gap-3 bg-white border-b border-gray-100 px-4 py-3 flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-gray-600 hover:text-gray-900 p-1 rounded-lg hover:bg-gray-100"
+            className="text-gray-600 hover:text-gray-900 p-1.5 rounded-lg hover:bg-gray-100 flex flex-col justify-center gap-1"
             aria-label="Ouvrir le menu"
           >
-            ☰
+            <span className="block w-5 h-0.5 bg-current rounded" />
+            <span className="block w-5 h-0.5 bg-current rounded" />
+            <span className="block w-5 h-0.5 bg-current rounded" />
           </button>
           <div className="flex items-center gap-2">
             <img src="/logo.svg" alt="logo" className="w-7 h-7 rounded-lg"/>
-            <span className="font-bold text-gray-800 text-sm">SénPrix</span>
+            <span className="font-bold text-gray-800 text-sm">Sama Prix</span>
           </div>
           {unread > 0 && (
-            <NavLink to="/notifications" className="ml-auto">
-              <span className="relative text-xl">
-                🔔
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">
-                  {unread > 9 ? '9+' : unread}
-                </span>
+            <NavLink to="/notifications" className="ml-auto text-sm text-gray-600 font-medium flex items-center gap-1.5">
+              Notifications
+              <span className="bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                {unread > 9 ? '9+' : unread}
               </span>
             </NavLink>
           )}

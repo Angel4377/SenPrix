@@ -16,8 +16,8 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("SénPrix API")
-                .description("API REST de la plateforme SénPrix — Surveillance participative des prix au Sénégal.")
+                .title("SamaPrix API")
+                .description("API REST de la plateforme SamaPrix — Surveillance participative des prix au Sénégal.")
                 .version("1.0.0")
             )
             .servers(List.of(

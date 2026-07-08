@@ -56,19 +56,41 @@ export default function TableauDeBordAdmin() {
   if (!donnees) return (
     <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ textAlign: "center", padding: 40 }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>⚠️</div>
+        <div style={{ fontSize: 48, marginBottom: 12 }}></div>
         <h3 style={{ color: "var(--texte)", marginBottom: 6 }}>Erreur de chargement</h3>
         <p style={{ color: "var(--gris)", fontSize: 13 }}>Impossible de récupérer les statistiques.</p>
-        <button onClick={() => window.location.reload()} className="btn-principal" style={{ marginTop: 16 }}>🔄 Réessayer</button>
+        <button onClick={() => window.location.reload()} className="btn-principal" style={{ marginTop: 16 }}> Réessayer</button>
       </div>
     </div>
   )
 
+  // ─── Indicateurs niveau national (vision décideur) ─────────────────────
+  const totalReports = donnees.totalReports || 0
+  const critHigh = (donnees.byPriority || []).filter(p => ['CRITICAL', 'HIGH'].includes(p.priority)).reduce((s, p) => s + p.count, 0)
+  const tauxAnomalie = totalReports ? Math.round((critHigh / totalReports) * 100) : 0
+
+  const productCounts = {}
+  ;(donnees.recentReports || []).forEach(r => { productCounts[r.product] = (productCounts[r.product] || 0) + 1 })
+  const topProduct = Object.entries(productCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '—'
+
+  const avgRegionCount = (donnees.byRegion || []).length
+    ? (donnees.byRegion || []).reduce((s, r) => s + r.count, 0) / donnees.byRegion.length : 0
+  const marchesARisque = (donnees.byRegion || []).filter(r => r.count > avgRegionCount).length
+  const marchesSensibles = [...(donnees.byRegion || [])].sort((a, b) => b.count - a.count).slice(0, 5)
+
+  const productTension = {}
+  ;(donnees.recentReports || []).forEach(r => {
+    if (!r.officialPrice) return
+    const ecart = ((r.priceObserved - r.officialPrice) / r.officialPrice) * 100
+    if (productTension[r.product] === undefined || ecart > productTension[r.product]) productTension[r.product] = ecart
+  })
+  const produitsSousTension = Object.entries(productTension).sort((a, b) => b[1] - a[1]).slice(0, 5)
+
   const indicateurs = [
-    { label: "Signalements critiques", valeur: donnees.criticalReports, abrev: "CR", couleur: "#FF4D6D", fondIcone: "#fff0f3", tendance: "▲ +3", tendanceOk: false },
-    { label: "En attente", valeur: donnees.pendingReports, abrev: "AT", couleur: "#FF9F43", fondIcone: "#fff8ed", tendance: "▼ -5", tendanceOk: true },
-    { label: "Résolus ce mois", valeur: donnees.resolvedReports, abrev: "OK", couleur: "#05D69E", fondIcone: "#e6fdf6", tendance: "▲ +12", tendanceOk: true },
-    { label: "Total signalements", valeur: donnees.totalReports, abrev: "TO", couleur: "#4A90E2", fondIcone: "#eef4ff", tendance: `${donnees.byRegion?.length || 0} régions`, tendanceOk: true },
+    { label: "Relevés (total)", valeur: totalReports, abrev: "RE", couleur: "#4A90E2", fondIcone: "#eef4ff", tendance: `${donnees.byRegion?.length || 0} régions`, tendanceOk: true },
+    { label: "Taux d'anomalie", valeur: `${tauxAnomalie}%`, abrev: "TX", couleur: "#FF9F43", fondIcone: "#fff8ed", tendance: tauxAnomalie >= 20 ? "Élevé" : "Maîtrisé", tendanceOk: tauxAnomalie < 20 },
+    { label: "Produit le + signalé", valeur: topProduct, abrev: "PR", couleur: "#FF4D6D", fondIcone: "#fff0f3", tendance: `${productCounts[topProduct] || 0} signalements`, tendanceOk: false },
+    { label: "Marchés à risque", valeur: marchesARisque, abrev: "MR", couleur: "#05D69E", fondIcone: "#e6fdf6", tendance: `${marchesSensibles.length} suivis`, tendanceOk: true },
   ]
 
   return (
@@ -76,7 +98,7 @@ export default function TableauDeBordAdmin() {
       {/* EN-TÊTE */}
       <div style={{ background: "white", borderBottom: "1px solid var(--bordure)", padding: "0 24px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 1px 8px rgba(27,37,89,.04)", flexShrink: 0 }}>
         <div>
-          <h2 style={{ fontSize: 16, fontWeight: 800, color: "var(--texte)", letterSpacing: "-.3px" }}>Tableau de bord</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 800, color: "var(--texte)", letterSpacing: "-.3px" }}>Tableau de bord de l'admin  — niveau national</h2>
           <p style={{ fontSize: 10, color: "var(--gris)", marginTop: 1 }}>Direction du Commerce Intérieur · Surveillance des marchés · Sénégal</p>
         </div>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -96,7 +118,7 @@ export default function TableauDeBordAdmin() {
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: ind.fondIcone, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: ind.couleur }}>{ind.abrev}</div>
                 <span style={{ padding: "3px 8px", borderRadius: 20, fontSize: 9, fontWeight: 700, background: ind.tendanceOk ? "#e6fdf6" : "#fff0f3", color: ind.tendanceOk ? "var(--acc2)" : "var(--rouge)" }}>{ind.tendance}</span>
               </div>
-              <div style={{ fontSize: 26, fontWeight: 900, color: ind.couleur, letterSpacing: "-.5px" }}>{ind.valeur}</div>
+              <div style={{ fontSize: typeof ind.valeur === 'string' && ind.valeur.length > 6 ? 16 : 26, fontWeight: 900, color: ind.couleur, letterSpacing: "-.5px" }}>{ind.valeur}</div>
               <div style={{ fontSize: 11, color: "var(--gris)", marginTop: 3 }}>{ind.label}</div>
               <div style={{ height: 3, background: "var(--bordure)", borderRadius: 2, marginTop: 12, overflow: "hidden" }}>
                 <div style={{ height: "100%", width: "60%", background: ind.couleur, borderRadius: 2 }}/>
@@ -163,6 +185,43 @@ export default function TableauDeBordAdmin() {
                   <Legend iconType="circle" iconSize={8} formatter={(v) => <span style={{ fontSize: 10, color: "var(--texte)" }}>{v}</span>}/>
                 </PieChart>
               </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* MARCHÉS SENSIBLES & PRODUITS SOUS TENSION */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-5">
+          <div className="carte" style={{ overflow: "hidden" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--bordure)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>Marchés les plus sensibles</span>
+            </div>
+            <div style={{ padding: "6px 18px" }}>
+              {marchesSensibles.length === 0 ? (
+                <p style={{ fontSize: 12, color: "var(--gris)", padding: "12px 0" }}>Aucune donnée disponible.</p>
+              ) : marchesSensibles.map((r, i) => (
+                <div key={r.name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: i < marchesSensibles.length - 1 ? "1px solid var(--bordure)" : "none" }}>
+                  <span style={{ fontSize: 12, color: "var(--texte)", fontWeight: 600 }}>{r.name}</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#FF4D6D" }}>{r.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="carte" style={{ overflow: "hidden" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid var(--bordure)" }}>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>Produits sous tension</span>
+            </div>
+            <div style={{ padding: 16, display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {produitsSousTension.length === 0 ? (
+                <p style={{ fontSize: 12, color: "var(--gris)" }}>Aucune donnée disponible.</p>
+              ) : produitsSousTension.map(([name, ecart]) => {
+                const couleur = ecart >= 20 ? { bg: "#fff0f3", fg: "#FF4D6D" } : ecart >= 10 ? { bg: "#fff8ed", fg: "#FF9F43" } : { bg: "#e6fdf6", fg: "#05D69E" }
+                return (
+                  <span key={name} style={{ padding: "6px 12px", borderRadius: 20, fontSize: 11, fontWeight: 700, background: couleur.bg, color: couleur.fg }}>
+                    {name} {ecart > 0 ? "+" : ""}{Math.round(ecart)}%
+                  </span>
+                )
+              })}
             </div>
           </div>
         </div>

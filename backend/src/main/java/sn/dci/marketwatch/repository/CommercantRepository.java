@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface CommercantRepository extends JpaRepository<Commercant, Long> {
     List<Commercant> findAllByOrderByRegion_NameAscNameAsc();
+    List<Commercant> findByUser_Id(Long userId);
 }

@@ -15,25 +15,22 @@ L.Icon.Default.mergeOptions({
 
 /* ─── Marqueur coloré par conformité ─────────────────────────────── */
 const markerIcon = (ecart) => {
-  const color = ecart >= 20 ? '#ef4444' : ecart >= 10 ? '#f97316' : ecart > 0 ? '#f59e0b' : '#22c55e'
-  const emoji = ecart >= 20 ? '🚨' : ecart >= 10 ? '⚠️' : ecart > 0 ? '📌' : '✅'
+  const color = ecart >= 20 ? '#ef4444' : ecart >= 10 ? '#f97316' : '#22c55e'
   return L.divIcon({
     className: '',
     html: `<div style="
       width:32px;height:32px;border-radius:50%;background:${color};
       border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);
-      display:flex;align-items:center;justify-content:center;font-size:14px;
-    ">${emoji}</div>`,
+    "></div>`,
     iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -18],
   })
 }
 
 function EcartBadge({ ecart }) {
-  if (ecart >= 20) return <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-bold">🚨 CRITIQUE +{ecart}%</span>
-  if (ecart >= 10) return <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-bold">⚠️ ÉLEVÉ +{ecart}%</span>
-  if (ecart > 0)   return <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">📌 +{ecart}%</span>
-  if (ecart < 0)   return <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold">✅ {ecart}%</span>
-  return <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">CONFORME</span>
+  if (ecart >= 20) return <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-bold">Non conforme +{ecart}%</span>
+  if (ecart >= 10) return <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-bold">Suspect +{ecart}%</span>
+  if (ecart > 0)   return <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold">Conforme +{ecart}%</span>
+  return <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold">Conforme {ecart}%</span>
 }
 
 /* ════════════════════════════════════════════════════════════════════ */
@@ -108,7 +105,7 @@ export default function Compare() {
 
       {/* Formulaire */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-        <h3 className="font-semibold text-gray-700 mb-4">🔍 Sélectionnez un produit et une localisation</h3>
+        <h3 className="font-semibold text-gray-700 mb-4">Sélectionnez un produit et une localisation</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Région / Ville</label>
@@ -129,7 +126,7 @@ export default function Compare() {
           <div className="flex items-end">
             <button onClick={handleCompare} disabled={!selectedRegion || !selectedProduct || loading}
               className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
-              {loading ? <><span className="animate-spin">⏳</span> Recherche…</> : '🔍 Comparer les prix'}
+              {loading ? 'Recherche…' : 'Comparer les prix'}
             </button>
           </div>
         </div>
@@ -144,7 +141,7 @@ export default function Compare() {
             <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-xl font-bold">{compareData.product}</h3>
-                <p className="text-blue-200 text-sm">📍 {compareData.region} · {merchants.length} commerces comparés</p>
+                <p className="text-blue-200 text-sm"> {compareData.region} · {merchants.length} commerces comparés</p>
               </div>
               <div className="text-right">
                 <p className="text-blue-300 text-xs">Prix officiel DCI</p>
@@ -153,13 +150,13 @@ export default function Compare() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { label: 'Prix min',    value: `${minPrice} F`,          emoji: '🟢' },
-                { label: 'Prix moyen', value: `${avgPrice} F`,           emoji: '🟡' },
-                { label: 'Prix max',   value: `${maxPrice} F`,           emoji: '🔴' },
-                { label: 'Critiques',  value: `${nbCritique} commerce(s)`, emoji: '🚨' },
+                { label: 'Prix min',    value: `${minPrice} F` },
+                { label: 'Prix moyen', value: `${avgPrice} F` },
+                { label: 'Prix max',   value: `${maxPrice} F` },
+                { label: 'Critiques',  value: `${nbCritique} commerce(s)` },
               ].map(s => (
                 <div key={s.label} className="bg-white/10 rounded-lg px-3 py-2 text-center">
-                  <p className="text-xs text-blue-200">{s.emoji} {s.label}</p>
+                  <p className="text-xs text-blue-200">{s.label}</p>
                   <p className="font-bold text-sm mt-0.5">{s.value}</p>
                 </div>
               ))}
@@ -169,7 +166,6 @@ export default function Compare() {
           {/* Alerte critique */}
           {nbCritique > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-              <span className="text-2xl">🚨</span>
               <div>
                 <p className="font-bold text-red-800">Dépassement critique détecté !</p>
                 <p className="text-red-600 text-sm mt-0.5">
@@ -181,7 +177,7 @@ export default function Compare() {
 
           {/* Onglets */}
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
-            {[['table','📋 Tableau'],['bar','📊 Graphique'],['map','🗺️ Carte']].map(([mode, label]) => (
+            {[['table','Tableau'],['bar','Graphique'],['map','Carte']].map(([mode, label]) => (
               <button key={mode} onClick={() => setViewMode(mode)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all
                   ${viewMode === mode ? 'bg-white text-blue-700 shadow-sm font-semibold' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -206,7 +202,7 @@ export default function Compare() {
                     {[...merchants].sort((a,b)=>a.price-b.price).map((m, i) => (
                       <tr key={i} className={`hover:bg-gray-50 ${i === 0 ? 'bg-green-50/60' : m.ecart >= 20 ? 'bg-red-50/40' : ''}`}>
                         <td className="px-4 py-3 text-center text-lg">
-                          {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span className="text-gray-400 text-sm">{i+1}</span>}
+                          <span className={i === 0 ? 'font-bold text-green-700' : 'text-gray-400 text-sm'}>{i+1}</span>
                         </td>
                         <td className="px-4 py-3 font-semibold text-gray-800">{m.name}</td>
                         <td className="px-4 py-3 text-gray-400 text-xs">{m.address}</td>
@@ -224,7 +220,7 @@ export default function Compare() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span>{i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`}</span>
+                          <span>{i+1}.</span>
                           <p className="font-semibold text-gray-800 text-sm">{m.name}</p>
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">{m.address}</p>
@@ -254,7 +250,7 @@ export default function Compare() {
                   <Bar dataKey="Prix pratiqué" fill="#1d4ed8" radius={[3,3,0,0]}/>
                 </BarChart>
               </ResponsiveContainer>
-              <p className="text-xs text-gray-400 mt-2">📏 Ligne pointillée = seuil prix officiel</p>
+              <p className="text-xs text-gray-400 mt-2"> Ligne pointillée = seuil prix officiel</p>
             </div>
           )}
 
@@ -264,10 +260,9 @@ export default function Compare() {
               {/* Légende */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex flex-wrap gap-3 text-xs text-gray-600">
                 <span className="font-semibold text-gray-700">Légende :</span>
-                <span>✅ Conforme (≤0%)</span>
-                <span>📌 Vigilance (1–9%)</span>
-                <span>⚠️ Élevé (10–19%)</span>
-                <span>🚨 Critique (≥20%)</span>
+                <span>Conforme (&lt;10%)</span>
+                <span>Suspect (10–19%)</span>
+                <span>Non conforme (≥20%)</span>
               </div>
 
               {/* Carte Leaflet */}
@@ -282,7 +277,7 @@ export default function Compare() {
                       <Popup>
                         <div className="text-sm min-w-[180px]">
                           <p className="font-bold text-gray-800 mb-1">{m.name}</p>
-                          <p className="text-xs text-gray-500 mb-2">📍 {m.address}</p>
+                          <p className="text-xs text-gray-500 mb-2">{m.address}</p>
                           <div className="flex justify-between bg-gray-50 rounded-lg px-3 py-2 mb-2">
                             <div>
                               <p className="text-xs text-gray-400">Constaté</p>
@@ -310,9 +305,7 @@ export default function Compare() {
                 {[...merchants].sort((a,b)=>a.price-b.price).map((m, i) => (
                   <div key={i} className={`flex items-center gap-3 bg-white rounded-xl border px-4 py-3 shadow-sm
                     ${m.ecart>=20?'border-red-200':m.ecart>=10?'border-orange-200':'border-gray-100'}`}>
-                    <span className="text-xl flex-shrink-0">
-                      {i===0?'🥇':m.ecart>=20?'🚨':m.ecart>=10?'⚠️':'✅'}
-                    </span>
+                    <span className="text-gray-400 text-sm font-semibold flex-shrink-0">{i+1}.</span>
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-gray-800 text-sm truncate">{m.name}</p>
                       <p className="text-xs text-gray-400 truncate">{m.address}</p>
@@ -332,7 +325,6 @@ export default function Compare() {
       {/* État vide */}
       {!compareData && !loading && (
         <div className="bg-white rounded-xl border border-dashed border-gray-200 p-12 text-center">
-          <div className="text-5xl mb-3">🗺️</div>
           <p className="text-gray-500 font-medium">Sélectionnez un produit et une région pour lancer la comparaison</p>
           <p className="text-gray-400 text-sm mt-1">Résultats disponibles en tableau, graphique ou carte interactive.</p>
         </div>

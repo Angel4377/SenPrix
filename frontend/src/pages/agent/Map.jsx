@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import api from '../../api/axios'
+import { statutLabel, prioriteLabel } from '../../utils/labels'
 
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
@@ -44,7 +45,7 @@ export default function AgentMap() {
         {Object.entries(PRIORITY_COLORS).map(([p, c]) => (
           <div key={p} className="flex items-center gap-1.5">
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: c }} />
-            <span>{p}</span>
+            <span>{prioriteLabel(p)}</span>
           </div>
         ))}
         <span className="ml-auto text-gray-400">{alerts.filter(a => a.priority === 'CRITICAL').length} critiques • {alerts.filter(a => a.status === 'PENDING').length} en attente</span>
@@ -61,9 +62,9 @@ export default function AgentMap() {
               <Popup>
                 <div className="text-sm min-w-48">
                   <div style={{ color: PRIORITY_COLORS[a.priority] }} className="font-bold mb-1">
-                    {a.priority} — {a.productName}
+                    {prioriteLabel(a.priority)} — {a.productName}
                   </div>
-                  <div className="text-xs text-gray-500 mb-1">📍 {a.regionName}{a.merchantName ? ' · ' + a.merchantName : ''}</div>
+                  <div className="text-xs text-gray-500 mb-1"> {a.regionName}{a.merchantName ? ' · ' + a.merchantName : ''}</div>
                   <div className="flex gap-2 text-xs mb-2">
                     <span className="text-red-600 font-semibold">{Math.round(a.priceObserved)} F observé</span>
                     {a.officialPrice && <span className="text-gray-400">/ {Math.round(a.officialPrice)} F officiel</span>}
@@ -71,12 +72,12 @@ export default function AgentMap() {
                   {a.description && <p className="text-xs text-gray-400 italic mb-2">"{a.description.slice(0, 80)}"</p>}
                   <div className="flex items-center justify-between">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${a.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
-                      {a.status}
+                      {statutLabel(a.status)}
                     </span>
                     {a.status === 'PENDING' && (
                       <button onClick={() => verify(a.id)}
                         className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700">
-                        ✓ Vérifier
+                         Vérifier
                       </button>
                     )}
                   </div>

@@ -6,7 +6,7 @@ import {
 import api from '../../api/axios'
 
 /**
- *  Analyse et Intelligence des Données
+ * Analyse et Intelligence des Données
  * Tendances tarifaires, anomalies statistiques, export CSV/Excel/PDF
  */
 export default function Analytics() {
@@ -99,10 +99,10 @@ export default function Analytics() {
         </div>
         {/* Boutons export */}
         <div className="flex gap-2">
-          {[['csv','📊 CSV'],['xlsx','📗 Excel'],['pdf','📄 PDF']].map(([fmt, label]) => (
+          {[['csv','CSV'],['xlsx','Excel'],['pdf','PDF']].map(([fmt, label]) => (
             <button key={fmt} onClick={() => exportData(fmt)} disabled={!!exporting}
               className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50">
-              {exporting === fmt ? '⏳...' : label}
+              {exporting === fmt ? '...' : label}
             </button>
           ))}
         </div>
@@ -112,18 +112,17 @@ export default function Analytics() {
       {kpis && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: '📝', label: 'Total signalements', value: kpis.totalSignalements.toLocaleString(), color: 'bg-blue-50 border-blue-200' },
-            { icon: '✅', label: 'Taux de résolution', value: `${kpis.tauxResolution}%`, color: 'bg-green-50 border-green-200' },
-            { icon: '📈', label: 'Écart moyen', value: `+${kpis.ecartMoyen}%`, color: 'bg-yellow-50 border-yellow-200' },
-            { icon: '🚨', label: 'Zones actives', value: kpis.zonesActives, color: 'bg-red-50 border-red-200' },
-            { icon: '👮', label: 'Missions terminées', value: kpis.missionsDone, color: 'bg-purple-50 border-purple-200' },
-            { icon: '⚖️', label: 'Infractions', value: kpis.infractions, color: 'bg-orange-50 border-orange-200' },
-            { icon: '🏪', label: 'Commerces contrôlés', value: kpis.merchantsControlled, color: 'bg-teal-50 border-teal-200' },
-            { icon: '🛒', label: 'Produits en alerte', value: kpis.productsAlerted, color: 'bg-pink-50 border-pink-200' },
-          ].map(({ icon, label, value, color }) => (
+            { label: 'Total signalements', value: kpis.totalSignalements.toLocaleString(), color: 'bg-blue-50 border-blue-200' },
+            { label: 'Taux de résolution', value: `${kpis.tauxResolution}%`, color: 'bg-green-50 border-green-200' },
+            { label: 'Écart moyen', value: `+${kpis.ecartMoyen}%`, color: 'bg-yellow-50 border-yellow-200' },
+            { label: 'Zones actives', value: kpis.zonesActives, color: 'bg-red-50 border-red-200' },
+            { label: 'Missions terminées', value: kpis.missionsDone, color: 'bg-purple-50 border-purple-200' },
+            { label: 'Infractions', value: kpis.infractions, color: 'bg-orange-50 border-orange-200' },
+            { label: 'Commerces contrôlés', value: kpis.merchantsControlled, color: 'bg-teal-50 border-teal-200' },
+            { label: 'Produits en alerte', value: kpis.productsAlerted, color: 'bg-pink-50 border-pink-200' },
+          ].map(({ label, value, color }) => (
             <div key={label} className={`rounded-xl border p-4 ${color}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span>{icon}</span>
+              <div className="mb-1">
                 <span className="text-xs text-gray-500">{label}</span>
               </div>
               <p className="text-2xl font-black text-gray-800">{value}</p>
@@ -135,7 +134,7 @@ export default function Analytics() {
       {/* Sélecteur période + onglets */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          {[['trends','📈 Tendances'],['anomalies','🔍 Anomalies'],['signalements','📊 Signalements']].map(([t, label]) => (
+          {[['trends','Tendances'],['anomalies','Anomalies'],['signalements','Signalements']].map(([t, label]) => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
                 ${tab === t ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
@@ -176,14 +175,13 @@ export default function Analytics() {
             <h3 className="font-semibold text-gray-700 mb-4">Analyse prédictive — Prochaines 4 semaines</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[
-                { product: 'Huile végétale', trend: 'HAUSSE', prediction: '+5 à +8% probable', risk: 'Élevé', icon: '📈', color: 'text-red-600 bg-red-50' },
-                { product: 'Riz brisé', trend: 'STABLE', prediction: 'Stable ±2%', risk: 'Faible', icon: '➡️', color: 'text-blue-600 bg-blue-50' },
-                { product: 'Sucre cristallisé', trend: 'LÉGÈRE HAUSSE', prediction: '+2 à +4%', risk: 'Modéré', icon: '↗️', color: 'text-yellow-600 bg-yellow-50' },
-                { product: 'Pain ordinaire', trend: 'BAISSE', prediction: '-1 à -3% (normalisation)', risk: 'Faible', icon: '📉', color: 'text-green-600 bg-green-50' },
+                { product: 'Huile végétale', trend: 'HAUSSE', prediction: '+5 à +8% probable', risk: 'Élevé', color: 'text-red-600 bg-red-50' },
+                { product: 'Riz brisé', trend: 'STABLE', prediction: 'Stable ±2%', risk: 'Faible', color: 'text-blue-600 bg-blue-50' },
+                { product: 'Sucre cristallisé', trend: 'LÉGÈRE HAUSSE', prediction: '+2 à +4%', risk: 'Modéré', color: 'text-yellow-600 bg-yellow-50' },
+                { product: 'Pain ordinaire', trend: 'BAISSE', prediction: '-1 à -3% (normalisation)', risk: 'Faible', color: 'text-green-600 bg-green-50' },
               ].map(p => (
                 <div key={p.product} className={`rounded-lg p-3 ${p.color.split(' ')[1]}`}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span>{p.icon}</span>
                     <span className="font-semibold text-gray-800">{p.product}</span>
                     <span className={`text-xs font-bold ml-auto ${p.color.split(' ')[0]}`}>{p.trend}</span>
                   </div>
@@ -203,7 +201,7 @@ export default function Analytics() {
       {tab === 'anomalies' && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="p-4 border-b border-gray-100 bg-red-50">
-            <h3 className="font-semibold text-red-800">🔍 Zones et produits à risque détectés automatiquement</h3>
+            <h3 className="font-semibold text-red-800">Zones et produits à risque détectés automatiquement</h3>
             <p className="text-xs text-red-600 mt-1">Basé sur les écarts statistiques et la fréquence des signalements</p>
           </div>
           <table className="min-w-full text-sm">
@@ -217,7 +215,7 @@ export default function Analytics() {
             <tbody className="divide-y divide-gray-100">
               {anomalies.map((a, i) => (
                 <tr key={i} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-800">📍 {a.region}</td>
+                  <td className="px-4 py-3 font-medium text-gray-800">{a.region}</td>
                   <td className="px-4 py-3 text-gray-700">{a.product}</td>
                   <td className="px-4 py-3 font-bold text-red-600">+{a.ecart}%</td>
                   <td className="px-4 py-3">

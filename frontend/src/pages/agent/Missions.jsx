@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 
 const COLS = [
-  { key: 'PLANNED', label: '📅 Planifiées', color: 'border-t-blue-400' },
-  { key: 'IN_PROGRESS', label: '🔄 En cours', color: 'border-t-orange-400' },
-  { key: 'COMPLETED', label: '✅ Terminées', color: 'border-t-green-400' },
+  { key: 'PLANNED', label: 'Planifiées', color: 'border-t-blue-400' },
+  { key: 'IN_PROGRESS', label: 'En cours', color: 'border-t-orange-400' },
+  { key: 'COMPLETED', label: 'Terminées', color: 'border-t-green-400' },
 ]
 
 export default function AgentMissions() {
@@ -13,6 +13,7 @@ export default function AgentMissions() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ regionId: '', title: '', description: '', scheduledDate: '' })
   const [msg, setMsg] = useState('')
+  const [msgOk, setMsgOk] = useState(true)
 
   const load = () => {
     api.get('/agent/missions').then(r => setMissions(r.data))
@@ -30,11 +31,12 @@ export default function AgentMissions() {
     e.preventDefault()
     try {
       await api.post('/agent/missions', { ...form, regionId: parseInt(form.regionId) })
-      setMsg('✅ Mission créée !')
+      setMsg('Mission créée !')
+      setMsgOk(true)
       setShowForm(false)
       setForm({ regionId: '', title: '', description: '', scheduledDate: '' })
       load()
-    } catch { setMsg('❌ Erreur lors de la création.') }
+    } catch { setMsg('Erreur lors de la création.'); setMsgOk(false) }
   }
 
   return (
@@ -46,12 +48,12 @@ export default function AgentMissions() {
         </div>
         <button onClick={() => setShowForm(!showForm)}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-          {showForm ? '✕ Annuler' : '➕ Nouvelle mission'}
+          {showForm ? 'Annuler' : 'Nouvelle mission'}
         </button>
       </div>
 
       {msg && (
-        <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${msg.startsWith('✅') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+        <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${msgOk ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
           {msg}
         </div>
       )}
@@ -92,7 +94,7 @@ export default function AgentMissions() {
                 Annuler
               </button>
               <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700">
-                ✅ Créer la mission
+                Créer la mission
               </button>
             </div>
           </form>
@@ -115,8 +117,8 @@ export default function AgentMissions() {
                 ) : items.map(m => (
                   <div key={m.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100 hover:border-green-200 transition-colors">
                     <p className="text-sm font-semibold text-gray-800 mb-1">{m.title}</p>
-                    <p className="text-xs text-gray-500 mb-2">📍 {m.regionName}</p>
-                    {m.scheduledDate && <p className="text-xs text-gray-400 mb-2">📆 {m.scheduledDate}</p>}
+                    <p className="text-xs text-gray-500 mb-2">{m.regionName}</p>
+                    {m.scheduledDate && <p className="text-xs text-gray-400 mb-2">{m.scheduledDate}</p>}
                     {m.description && <p className="text-xs text-gray-400 italic mb-2">"{m.description.slice(0,60)}..."</p>}
                     {/* Actions */}
                     <div className="flex flex-wrap gap-1.5 mt-2">
@@ -134,12 +136,12 @@ export default function AgentMissions() {
                           </button>
                           <button onClick={() => changeStatus(m.id, 'COMPLETED')}
                             className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-2 py-1 rounded">
-                            ✅ Terminer
+                            Terminer
                           </button>
                         </>
                       )}
                       {col.key === 'COMPLETED' && (
-                        <span className="text-xs text-green-600 font-medium">Mission accomplie ✔</span>
+                        <span className="text-xs text-green-600 font-medium">Mission accomplie</span>
                       )}
                     </div>
                   </div>

@@ -4,13 +4,20 @@ import ResponsiveTable from '../../components/ResponsiveTable'
 
 export default function AdminPrices() {
   const [prices, setPrices] = useState([])
+  const [history, setHistory] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
   const [products, setProducts] = useState([])
   const [regions, setRegions] = useState([])
   const [form, setForm] = useState({ productId: '', regionId: '', price: '', validFrom: new Date().toISOString().slice(0,10) })
   const [msg, setMsg] = useState('')
+  const [msgOk, setMsgOk] = useState(true)
+
+  const loadPrices = () => api.get('/prices/all').then(r => setPrices(r.data))
+  const loadHistory = () => api.get('/admin/prices/history').then(r => setHistory(r.data))
 
   useEffect(() => {
-    api.get('/prices/all').then(r => setPrices(r.data))
+    loadPrices()
+    loadHistory()
     api.get('/products').then(r => setProducts(r.data))
     api.get('/regions').then(r => setRegions(r.data))
   }, [])
@@ -19,10 +26,12 @@ export default function AdminPrices() {
     e.preventDefault()
     try {
       await api.post('/admin/prices', form)
-      setMsg('✅ Prix mis à jour avec succès !')
-      api.get('/prices/all').then(r => setPrices(r.data))
+      setMsg('Prix mis à jour avec succès !')
+      setMsgOk(true)
+      loadPrices()
+      loadHistory()
       setForm({ ...form, price: '' })
-    } catch { setMsg('❌ Erreur lors de la mise à jour.') }
+    } catch { setMsg('Erreur lors de la mise à jour.'); setMsgOk(false) }
   }
 
   const categories = [...new Set(prices.map(p => p.category))].sort()
@@ -35,6 +44,14 @@ export default function AdminPrices() {
     { header: 'Depuis', accessor: 'validFrom', tdClass: 'text-gray-400 text-xs' }
   ]
 
+  const historyColumns = [
+    { header: 'Produit', accessor: 'productName', tdClass: 'font-medium text-gray-800' },
+    { header: 'Région', accessor: 'regionName', tdClass: 'text-gray-600 text-xs' },
+    { header: 'Prix FCFA', accessor: 'price', tdClass: 'text-gray-500', cell: r => <span className="line-through text-gray-400">{Math.round(r.price)} F</span> },
+    { header: 'Période', accessor: 'validFrom', tdClass: 'text-gray-400 text-xs', cell: r => <span>{r.validFrom} → {r.validTo}</span> },
+    { header: 'Modifié par', accessor: 'setBy', tdClass: 'text-gray-400 text-xs', cell: r => r.setBy || '—' }
+  ]
+
   return (
     <div>
       <div className="mb-6">
@@ -44,8 +61,8 @@ export default function AdminPrices() {
 
       {/* Form */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <h3 className="font-semibold text-gray-700 mb-4">➕ Définir un prix officiel</h3>
-        {msg && <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${msg.startsWith('✅') ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>{msg}</div>}
+        <h3 className="font-semibold text-gray-700 mb-4">Définir un prix officiel</h3>
+        {msg && <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${msgOk ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>{msg}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Produit *</label>
@@ -75,12 +92,16 @@ export default function AdminPrices() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
           </div>
           <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg text-sm">
-            💾 Enregistrer
+            Enregistrer
           </button>
         </form>
       </div>
 
-      {/* Prices table */}
+      {/* Prix actifs (en vigueur uniquement) */}
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-semibold text-gray-700">Prix actifs</h3>
+        <span className="text-xs text-gray-400">{prices.length} prix en vigueur</span>
+      </div>
       {categories.map(cat => (
         <div key={cat} className="bg-white rounded-xl shadow-sm border border-gray-100 mb-4">
           <div className="px-5 py-3 bg-gray-50 border-b border-gray-100">
@@ -91,6 +112,25 @@ export default function AdminPrices() {
           </div>
         </div>
       ))}
+
+      {/* Historique des prix antérieurs */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 mt-6">
+        <button
+          type="button"
+          onClick={() => setShowHistory(s => !s)}
+          className="w-full flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100 rounded-t-xl"
+        >
+          <span className="font-semibold text-gray-700">Historique des prix ({history.length})</span>
+          <span className="text-xs text-blue-600">{showHistory ? 'Masquer' : 'Afficher'}</span>
+        </button>
+        {showHistory && (
+          <div className="p-4">
+            {history.length === 0
+              ? <p className="text-sm text-gray-400 px-1 py-2">Aucun prix antérieur pour l'instant.</p>
+              : <ResponsiveTable columns={historyColumns} data={history} />}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

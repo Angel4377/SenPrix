@@ -29,21 +29,21 @@ export default function ConsumerHome() {
 
   // Déterminer le statut de conformité
   const getConformityStatus = (p) => {
-    if (!p.officialPrice) return { label: 'Inconnu', color: 'bg-gray-500', icon: '?' }
+    if (!p.officialPrice) return { label: 'Inconnu', color: 'bg-gray-500' }
     const ecart = ((p.price - p.officialPrice) / p.officialPrice * 100)
-    if (ecart > 10) return { label: 'Suspect', color: 'bg-yellow-500', icon: '⚠' }
-    if (ecart > 5) return { label: 'À surveiller', color: 'bg-orange-500', icon: '🔍' }
-    if (ecart < -5) return { label: 'Conforme', color: 'bg-green-500', icon: '✓' }
-    return { label: 'Conforme', color: 'bg-green-500', icon: '✓' }
+    if (ecart > 10) return { label: 'Suspect', color: 'bg-yellow-500' }
+    if (ecart > 5) return { label: 'À surveiller', color: 'bg-orange-500' }
+    if (ecart < -5) return { label: 'Conforme', color: 'bg-green-500' }
+    return { label: 'Conforme', color: 'bg-green-500' }
   }
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* En-tête principal (style SamaPrix) */}
+      {/* En-tête principal (style Sama Prix) */}
       <div className="bg-gradient-to-r from-teal-700 to-teal-600 text-white p-4 shadow-md">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">MarketWatch</h1>
+            <h1 className="text-2xl font-bold">Sama Prix</h1>
             <p className="text-teal-100 text-sm">Surveillance participative des prix</p>
           </div>
           <p className="text-xl font-bold">Sénégal</p>
@@ -76,7 +76,7 @@ export default function ConsumerHome() {
           <span className="text-sm text-gray-500">{filteredPrices.length} produit(s)</span>
         </div>
 
-        {/* Filtres par catégorie (style SamaPrix) */}
+        {/* Filtres par catégorie (style Sama Prix) */}
         <div className="flex gap-2 mb-6 flex-wrap">
           {categories.map(cat => (
             <button
@@ -118,10 +118,10 @@ export default function ConsumerHome() {
                       </p>
                     </div>
                     
-                    {/* Badge de statut (style SamaPrix) */}
+                    {/* Badge de statut (style Sama Prix) */}
                     <div className="ml-4 flex-shrink-0">
                       <span className={`${status.color} text-white px-4 py-2 rounded-full text-xs font-bold inline-block whitespace-nowrap`}>
-                        {status.icon} {status.label}
+                        {status.label}
                       </span>
                     </div>
                   </div>
@@ -134,20 +134,16 @@ export default function ConsumerHome() {
         {/* Navigation inférieure (optionnel) */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3">
           <Link to="/consumer/home" className="flex flex-col items-center text-teal-600 hover:text-teal-700 text-xs font-semibold">
-            <span className="text-xl">🏠</span>
-            Accueil
+Accueil
           </Link>
           <Link to="/consumer/compare" className="flex flex-col items-center text-gray-600 hover:text-teal-600 text-xs font-semibold">
-            <span className="text-xl">🗺️</span>
-            Carte
+Carte
           </Link>
           <Link to="/consumer/report" className="flex flex-col items-center text-gray-600 hover:text-teal-600 text-xs font-semibold">
-            <span className="text-xl">⚠️</span>
-            Signaler
+Signaler
           </Link>
           <Link to="/consumer/gamification" className="flex flex-col items-center text-gray-600 hover:text-teal-600 text-xs font-semibold">
-            <span className="text-xl">👤</span>
-            Profil
+Profil
           </Link>
         </div>
       </div>

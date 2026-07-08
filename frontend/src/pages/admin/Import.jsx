@@ -97,7 +97,7 @@ export default function Import() {
           <div key={i} className="flex items-center gap-2">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
               ${step > i + 1 ? 'bg-green-500 text-white' : step === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-              {step > i + 1 ? '✓' : i + 1}
+              {step > i + 1 ? '' : i + 1}
             </div>
             <span className={`text-sm ${step === i + 1 ? 'font-semibold text-blue-600' : 'text-gray-500'}`}>{label}</span>
             {i < 2 && <div className={`w-12 h-0.5 ${step > i + 1 ? 'bg-green-400' : 'bg-gray-200'}`} />}
@@ -110,7 +110,7 @@ export default function Import() {
         <div className="space-y-4">
           {/* Template CSV à télécharger */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-800 mb-2">📋 Format attendu (CSV séparé par ;)</h3>
+            <h3 className="font-semibold text-blue-800 mb-2">Format attendu (CSV séparé par ;)</h3>
             <code className="text-xs bg-white p-2 rounded block border text-gray-700">
               produit;region;prix_officiel;unite;date_application<br/>
               Riz brisé;Dakar;500;kg;2024-01-01<br/>
@@ -126,13 +126,12 @@ export default function Import() {
               }}
               className="mt-2 text-sm text-blue-600 underline hover:text-blue-800"
             >
-              ⬇️ Télécharger le template CSV
+              Télécharger le template CSV
             </button>
           </div>
 
           {/* Zone de dépôt */}
           <label className="block border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
-            <div className="text-4xl mb-3">📂</div>
             <p className="text-gray-600 font-medium">Cliquez pour sélectionner votre fichier</p>
             <p className="text-gray-400 text-sm mt-1">Formats acceptés : .csv, .xlsx (max 5 Mo)</p>
             <input ref={fileRef} type="file" accept=".csv,.xlsx" onChange={handleFile} className="hidden" />
@@ -140,7 +139,7 @@ export default function Import() {
 
           {errors.length > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              {errors.map((e, i) => <p key={i} className="text-red-700 text-sm">❌ {e}</p>)}
+              {errors.map((e, i) => <p key={i} className="text-red-700 text-sm"> {e}</p>)}
             </div>
           )}
         </div>
@@ -151,7 +150,7 @@ export default function Import() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-semibold text-gray-800">📄 {file?.name}</p>
+              <p className="font-semibold text-gray-800"> {file?.name}</p>
               <p className="text-sm text-gray-500">{rows.length} ligne(s) détectée(s)</p>
             </div>
             <div className="flex gap-3">
@@ -163,14 +162,14 @@ export default function Import() {
                 disabled={importing || errors.length > 0}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50"
               >
-                {importing ? '⏳ Import en cours...' : '🚀 Lancer l\'import'}
+                {importing ? 'Import en cours...' : "Lancer l'import"}
               </button>
             </div>
           </div>
 
           {errors.length > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="font-semibold text-yellow-800 text-sm mb-1">⚠️ {errors.length} avertissement(s) — l'import sera bloqué si des erreurs critiques existent</p>
+              <p className="font-semibold text-yellow-800 text-sm mb-1"> {errors.length} avertissement(s) — l'import sera bloqué si des erreurs critiques existent</p>
               {errors.slice(0, 5).map((e, i) => <p key={i} className="text-yellow-700 text-xs">• {e}</p>)}
             </div>
           )}
@@ -209,7 +208,7 @@ export default function Import() {
       {/* ÉTAPE 3 : Résultat */}
       {step === 3 && result && (
         <div className={`rounded-xl p-8 text-center ${result.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-          <div className="text-5xl mb-4">{result.success ? '✅' : '❌'}</div>
+          <div className="text-5xl mb-4">{result.success ? '' : ''}</div>
           {result.success ? (
             <>
               <h2 className="text-xl font-bold text-green-800 mb-2">Import réussi !</h2>

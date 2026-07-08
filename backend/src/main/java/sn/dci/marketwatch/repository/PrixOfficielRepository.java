@@ -17,4 +17,8 @@ public interface PrixOfficielRepository extends JpaRepository<PrixOfficiel, Long
 
     @Query("SELECT op FROM PrixOfficiel op WHERE op.validTo IS NULL AND op.product.id = :productId AND op.region.id = :regionId")
     Optional<PrixOfficiel> findCurrentByProductAndRegion(Long productId, Long regionId);
+
+    /** Historique : tous les prix qui ne sont plus en vigueur (remplacés par un prix plus récent) */
+    @Query("SELECT op FROM PrixOfficiel op WHERE op.validTo IS NOT NULL ORDER BY op.product.category, op.product.name, op.region.name, op.validFrom DESC")
+    List<PrixOfficiel> findAllHistory();
 }

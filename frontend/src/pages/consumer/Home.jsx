@@ -7,13 +7,11 @@ export default function ConsumerHome() {
   const [prices, setPrices] = useState([])
   const [regions, setRegions] = useState([])
   const [region, setRegion] = useState('Dakar')
-  const [myReports, setMyReports] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Tous')
 
   useEffect(() => {
-    api.get('/regions').then(r => setRegions(r.data))
-    api.get('/reports/my').then(r => setMyReports(r.data)).catch(() => {})
+    api.get('/regions').then(r => setRegions(r.data)).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -28,11 +26,11 @@ export default function ConsumerHome() {
   })
 
   const getConformityStatus = (p) => {
-    if (!p.officialPrice) return { label: 'Non référencé', icon: '—', color: 'bg-gray-400' }
+    if (!p.officialPrice) return { label: 'Non référencé', color: 'bg-gray-400' }
     const ecart = ((p.price - p.officialPrice) / p.officialPrice * 100)
-    if (ecart > 10) return { label: 'Suspect', icon: '⚠', color: 'bg-yellow-500' }
-    if (ecart > 5) return { label: 'À surveiller', icon: '👁', color: 'bg-orange-500' }
-    return { label: 'Conforme', icon: '✓', color: 'bg-green-500' }
+    if (ecart >= 20) return { label: 'Non conforme', color: 'bg-red-500' }
+    if (ecart >= 10) return { label: 'Suspect', color: 'bg-yellow-500' }
+    return { label: 'Conforme', color: 'bg-green-500' }
   }
 
   return (
@@ -51,7 +49,6 @@ export default function ConsumerHome() {
           onClick={() => navigate('/consumer/report')}
           className="w-full mb-6 bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 shadow-md transition-colors"
         >
-          <span className="text-2xl">⚠️</span>
           <div className="text-left">
             <p className="text-base font-bold">Signaler une anomalie</p>
             <p className="text-teal-200 text-xs font-normal">Prix trop élevé dans votre marché ?</p>
@@ -118,7 +115,7 @@ export default function ConsumerHome() {
                         Réf. <span className="font-semibold text-gray-800">{Math.round(p.officialPrice)} FCFA</span>
                       </p>
                       <p className="text-gray-700 font-medium mt-1">
-                        Observé : <span className={`font-bold ${parseFloat(ecart) > 10 ? 'text-red-600' : 'text-gray-900'}`}>
+                        Observé : <span className={`font-bold ${parseFloat(ecart) >= 20 ? 'text-red-600' : parseFloat(ecart) >= 10 ? 'text-orange-600' : 'text-gray-900'}`}>
                           {Math.round(p.price)} / {p.unit}
                         </span>
                       </p>
@@ -126,7 +123,7 @@ export default function ConsumerHome() {
                     
                     <div className="ml-4 flex-shrink-0">
                       <span className={`${status.color} text-white px-4 py-2 rounded-full text-xs font-bold inline-block whitespace-nowrap`}>
-                        {status.icon} {status.label}
+                        {status.label}
                       </span>
                     </div>
                   </div>
