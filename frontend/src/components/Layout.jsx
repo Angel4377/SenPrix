@@ -21,20 +21,21 @@ export default function Layout() {
 
   const navItems = () => {
     if (user?.role === 'ADMIN') return [
-      { to: '/admin/dashboard',  label: 'Tableau de bord' },
-      { to: '/admin/prices',     label: 'Gestion des prix' },
-      { to: '/admin/import',     label: 'Import CSV/Excel' },
-      { to: '/admin/reports',    label: 'Signalements' },
-      { to: '/admin/map',        label: 'Carte interactive' },
-      { to: '/admin/analytics',  label: 'Analyse & Export' },
-      { to: '/admin/audit-logs', label: "Journal d'audit" },
+      { to: '/admin/dashboard',    label: 'Tableau de bord' },
+      { to: '/admin/prices',       label: 'Gestion des prix' },
+      { to: '/admin/import',       label: 'Import CSV/Excel' },
+      { to: '/admin/reports',      label: 'Signalements' },
+      { to: '/admin/map',          label: 'Carte interactive' },
+      { to: '/admin/analytics',    label: 'Analyse & Export' },
+      { to: '/admin/audit-logs',   label: "Journal d'audit" },
+      { to: '/admin/users',        label: 'Utilisateurs & rôles' },
+      { to: '/admin/alert-config', label: "Seuils d'alerte" },
     ]
     if (user?.role === 'CONSUMER') return [
       { to: '/consumer/home',         label: 'Accueil & Prix' },
       { to: '/consumer/report',       label: 'Signaler une anomalie' },
       { to: '/consumer/my-reports',   label: 'Mes signalements' },
       { to: '/consumer/compare',      label: 'Comparer les prix' },
-      { to: '/consumer/gamification', label: 'Mon espace citoyen' },
     ]
     if (user?.role === 'AGENT') return [
       { to: '/agent/dashboard',  label: 'Tableau de bord' },
@@ -43,7 +44,8 @@ export default function Layout() {
       { to: '/agent/infraction', label: "Constat d'infraction" },
     ]
     if (user?.role === 'MERCHANT') return [
-      { to: '/merchant/prices', label: 'Prix officiels' },
+      { to: '/merchant/prices',  label: 'Prix officiels' },
+      { to: '/merchant/reports', label: 'Signalements reçus' },
     ]
     return []
   }

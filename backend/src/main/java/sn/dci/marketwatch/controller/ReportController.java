@@ -21,15 +21,16 @@ public class ReportController {
     private final PrixOfficielRepository priceRepo;
     private final UtilisateurRepository userRepo;
     private final NotificationRepository notifRepo;
+    private final AlertConfigRepository alertConfigRepo;
 
     public ReportController(SignalementRepository reportRepo, ProduitRepository productRepo,
                             RegionRepository regionRepo, CommercantRepository merchantRepo,
                             PrixOfficielRepository priceRepo, UtilisateurRepository userRepo,
-                            NotificationRepository notifRepo) {
+                            NotificationRepository notifRepo, AlertConfigRepository alertConfigRepo) {
         this.reportRepo = reportRepo; this.productRepo = productRepo;
         this.regionRepo = regionRepo; this.merchantRepo = merchantRepo;
         this.priceRepo = priceRepo; this.userRepo = userRepo;
-        this.notifRepo = notifRepo;
+        this.notifRepo = notifRepo; this.alertConfigRepo = alertConfigRepo;
     }
 
     /** GET /api/reports – Admin & Agent */
@@ -78,13 +79,15 @@ public class ReportController {
         Double officialPrice = priceRepo.findCurrentByProductAndRegion(productId, regionId)
                 .map(PrixOfficiel::getPrice).orElse(null);
 
-        // Calcul priorité
+        // Calcul priorité — seuils configurables par l'Admin (voir AlertConfigController)
+        AlertConfig alertConfig = alertConfigRepo.findAll().stream().findFirst()
+            .orElseGet(() -> alertConfigRepo.save(AlertConfig.builder().build()));
         Signalement.Priorite priority = Signalement.Priorite.NORMAL;
         if (officialPrice != null) {
             double ecart = (priceObserved - officialPrice) / officialPrice * 100;
-            if (ecart >= 20)     priority = Signalement.Priorite.CRITICAL;
-            else if (ecart >= 10) priority = Signalement.Priorite.HIGH;
-            else if (ecart <= 0)  priority = Signalement.Priorite.LOW;
+            if (ecart >= alertConfig.getCriticalThreshold())     priority = Signalement.Priorite.CRITICAL;
+            else if (ecart >= alertConfig.getHighThreshold())    priority = Signalement.Priorite.HIGH;
+            else if (ecart <= alertConfig.getLowThreshold())     priority = Signalement.Priorite.LOW;
         }
 
         Long merchantId = body.containsKey("merchantId") && body.get("merchantId") != null ?

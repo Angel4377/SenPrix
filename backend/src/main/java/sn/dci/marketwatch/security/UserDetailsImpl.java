@@ -17,6 +17,7 @@ public class UserDetailsImpl implements UserDetails {
     private final String username;   // email
     private final String password;
     private final String role;
+    private final boolean enabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Utilisateur user) {
@@ -25,11 +26,12 @@ public class UserDetailsImpl implements UserDetails {
         this.username = user.getEmail();
         this.password = user.getPassword();
         this.role = user.getRole().name();
+        this.enabled = Boolean.TRUE.equals(user.getActive());
         this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override public boolean isAccountNonExpired()    { return true; }
     @Override public boolean isAccountNonLocked()     { return true; }
     @Override public boolean isCredentialsNonExpired(){ return true; }
-    @Override public boolean isEnabled()              { return true; }
+    @Override public boolean isEnabled()              { return enabled; }
 }

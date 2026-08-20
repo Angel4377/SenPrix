@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface SignalementRepository extends JpaRepository<Signalement, Long> {
     List<Signalement> findByConsumer_IdOrderByCreatedAtDesc(Long consumerId);
+    List<Signalement> findByMerchant_IdOrderByCreatedAtDesc(Long merchantId);
     List<Signalement> findAllByOrderByCreatedAtDesc();
     long countByStatus(Signalement.Statut status);
     long countByPriority(Signalement.Priorite priority);

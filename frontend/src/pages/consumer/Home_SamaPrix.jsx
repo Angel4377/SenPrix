@@ -142,8 +142,8 @@ Carte
           <Link to="/consumer/report" className="flex flex-col items-center text-gray-600 hover:text-teal-600 text-xs font-semibold">
 Signaler
           </Link>
-          <Link to="/consumer/gamification" className="flex flex-col items-center text-gray-600 hover:text-teal-600 text-xs font-semibold">
-Profil
+          <Link to="/consumer/my-reports" className="flex flex-col items-center text-gray-600 hover:text-teal-600 text-xs font-semibold">
+Mes signalements
           </Link>
         </div>
       </div>

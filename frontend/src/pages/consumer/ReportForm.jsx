@@ -557,9 +557,9 @@ function SuccessScreen({ result, form, products, regions, navigate }) {
           className="py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition-colors">
           Mes signalements
         </button>
-        <button onClick={() => navigate('/consumer/gamification')}
+        <button onClick={() => navigate('/consumer/compare')}
           className="py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-xl text-sm transition-colors">
-          Voir mes badges
+          Comparer les prix
         </button>
       </div>
       <button onClick={() => navigate('/consumer/home')}

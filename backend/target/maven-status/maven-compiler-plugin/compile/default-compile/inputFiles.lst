@@ -1,5 +1,6 @@
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\DashboardController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\Signalement.java
+C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\AdminUserController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\ImportController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\PriceController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\repository\RegionRepository.java
@@ -17,12 +18,14 @@ C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\market
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\config\GlobalExceptionHandler.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\PrixOfficiel.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\Infraction.java
+C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\AlertConfigController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\Commercant.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\PrixDeclare.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\config\CacheConfig.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\config\SwaggerConfig.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\Notification.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\config\DataInitializer.java
+C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\AlertConfig.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\AuditLogController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\ReportController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\entity\JournalAudit.java
@@ -47,3 +50,4 @@ C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\market
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\controller\MerchantPriceController.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\service\AuditService.java
 C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\repository\SignalementRepository.java
+C:\Users\DELL\Documents\DITI5\marketwatch_v2\backend\src\main\java\sn\dci\marketwatch\repository\AlertConfigRepository.java

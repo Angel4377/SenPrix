@@ -21,13 +21,14 @@ public class PriceController {
     private final RegionRepository regionRepo;
     private final CommercantRepository merchantRepo;
     private final UtilisateurRepository userRepo;
+    private final PrixDeclareRepository declareRepo;
 
     public PriceController(PrixOfficielRepository priceRepo, ProduitRepository productRepo,
                            RegionRepository regionRepo, CommercantRepository merchantRepo,
-                           UtilisateurRepository userRepo) {
+                           UtilisateurRepository userRepo, PrixDeclareRepository declareRepo) {
         this.priceRepo = priceRepo; this.productRepo = productRepo;
         this.regionRepo = regionRepo; this.merchantRepo = merchantRepo;
-        this.userRepo = userRepo;
+        this.userRepo = userRepo; this.declareRepo = declareRepo;
     }
 
     /** GET /api/prices?region=Dakar */
@@ -72,6 +73,46 @@ public class PriceController {
             .validFrom(from).setBy(setter).build();
         priceRepo.save(op);
         return ResponseEntity.ok(Map.of("message", "Prix mis à jour avec succès."));
+    }
+
+    /**
+     * GET /api/prices/compare?regionId=&productId= — Consommateur (OS_C2)
+     * Compare, pour un produit et une région donnés, le prix officiel avec les
+     * prix réellement déclarés par les commerçants de cette région.
+     * (Remplace l'ancienne implémentation à données fictives qui vivait par erreur
+     * dans le module Gamification, retiré du projet.)
+     */
+    @GetMapping("/prices/compare")
+    public ResponseEntity<?> comparePrices(@RequestParam Long regionId, @RequestParam Long productId) {
+        Produit product = productRepo.findById(productId).orElseThrow();
+        Region region = regionRepo.findById(regionId).orElseThrow();
+        Double officialPrice = priceRepo.findCurrentByProductAndRegion(productId, regionId)
+                .map(PrixOfficiel::getPrice).orElse(null);
+
+        List<Map<String, Object>> merchants = declareRepo
+            .findByProduct_IdAndCommercant_Region_IdOrderByPriceAsc(productId, regionId)
+            .stream()
+            .map(d -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("name", d.getCommercant().getName());
+                m.put("address", d.getCommercant().getAddress());
+                m.put("lat", d.getCommercant().getLat());
+                m.put("lng", d.getCommercant().getLng());
+                m.put("price", d.getPrice());
+                if (officialPrice != null && officialPrice > 0) {
+                    double ecart = Math.round(((d.getPrice() - officialPrice) / officialPrice) * 1000.0) / 10.0;
+                    m.put("ecart", ecart);
+                }
+                return m;
+            }).toList();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("product", product.getName());
+        result.put("region", region.getName());
+        result.put("officialPrice", officialPrice);
+        result.put("unit", product.getUnit());
+        result.put("merchants", merchants);
+        return ResponseEntity.ok(result);
     }
 
     /** GET /api/products */

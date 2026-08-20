@@ -12,6 +12,7 @@ sn\dci\marketwatch\entity\Notification.class
 sn\dci\marketwatch\controller\MissionController.class
 sn\dci\marketwatch\entity\JournalAudit$JournalAuditBuilder.class
 sn\dci\marketwatch\controller\AuthController.class
+sn\dci\marketwatch\entity\AlertConfig.class
 sn\dci\marketwatch\entity\Region$RegionBuilder.class
 sn\dci\marketwatch\controller\MerchantPriceController.class
 sn\dci\marketwatch\MarketwatchApplication.class
@@ -29,6 +30,7 @@ sn\dci\marketwatch\config\SecurityConfig.class
 sn\dci\marketwatch\entity\Region.class
 sn\dci\marketwatch\repository\ProduitRepository.class
 sn\dci\marketwatch\service\RefreshTokenService.class
+sn\dci\marketwatch\controller\AdminUserController.class
 sn\dci\marketwatch\entity\Utilisateur.class
 sn\dci\marketwatch\controller\AuthController$RegisterRequest.class
 sn\dci\marketwatch\security\UserDetailsServiceImpl.class
@@ -36,6 +38,7 @@ sn\dci\marketwatch\entity\Mission.class
 sn\dci\marketwatch\entity\Notification$NotificationBuilder.class
 sn\dci\marketwatch\entity\Mission$Statut.class
 sn\dci\marketwatch\repository\UtilisateurRepository.class
+sn\dci\marketwatch\repository\AlertConfigRepository.class
 sn\dci\marketwatch\entity\Signalement$SignalementBuilder.class
 sn\dci\marketwatch\controller\DashboardController.class
 sn\dci\marketwatch\controller\AuditLogController.class
@@ -46,6 +49,7 @@ sn\dci\marketwatch\entity\Signalement.class
 sn\dci\marketwatch\controller\AuthController$LoginRequest.class
 sn\dci\marketwatch\entity\TokenRafraichissement$TokenRafraichissementBuilder.class
 sn\dci\marketwatch\entity\Utilisateur$UtilisateurBuilder.class
+sn\dci\marketwatch\controller\AlertConfigController.class
 sn\dci\marketwatch\repository\InfractionRepository.class
 sn\dci\marketwatch\service\FirebaseNotificationService.class
 sn\dci\marketwatch\repository\MissionRepository.class
@@ -58,6 +62,7 @@ sn\dci\marketwatch\entity\Utilisateur$Role.class
 sn\dci\marketwatch\repository\SignalementRepository.class
 sn\dci\marketwatch\entity\Produit$ProduitBuilder.class
 sn\dci\marketwatch\repository\CommercantRepository.class
+sn\dci\marketwatch\entity\AlertConfig$AlertConfigBuilder.class
 sn\dci\marketwatch\security\JwtAuthFilter.class
 sn\dci\marketwatch\entity\JournalAudit$Action.class
 sn\dci\marketwatch\entity\Infraction$InfractionBuilder.class

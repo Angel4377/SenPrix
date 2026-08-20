@@ -18,6 +18,9 @@ const ACTION_META = {
   PRICE_IMPORTED:    { label: 'Import prix',         color: 'bg-blue-100 text-blue-700' },
   ACCESS_DENIED:     { label: 'Accès refusé',        color: 'bg-red-100 text-red-700' },
   INVALID_TOKEN:     { label: 'Token invalide',      color: 'bg-red-100 text-red-700' },
+  USER_ROLE_CHANGED:   { label: 'Rôle modifié',       color: 'bg-purple-100 text-purple-700' },
+  USER_STATUS_CHANGED: { label: 'Compte activé/désactivé', color: 'bg-orange-100 text-orange-700' },
+  ALERT_CONFIG_UPDATED:{ label: "Seuils d'alerte modifiés", color: 'bg-indigo-100 text-indigo-700' },
 }
 
 const CATEGORIES = {
@@ -25,7 +28,7 @@ const CATEGORIES = {
   'Auth':        ['LOGIN','LOGIN_FAILED','LOGOUT','REGISTER','TOKEN_REFRESHED'],
   'Signalements':['REPORT_CREATED','REPORT_CONFIRMED','REPORT_VALIDATED','REPORT_REJECTED','REPORT_RESOLVED'],
   'Terrain':     ['MISSION_CREATED','MISSION_COMPLETED','INFRACTION_RECORDED'],
-  'Admin':       ['PRICE_IMPORTED'],
+  'Admin':       ['PRICE_IMPORTED','USER_ROLE_CHANGED','USER_STATUS_CHANGED','ALERT_CONFIG_UPDATED'],
   'Sécurité':    ['ACCESS_DENIED','INVALID_TOKEN'],
 }
 

@@ -26,13 +26,40 @@ public class MerchantPriceController {
     private final PrixOfficielRepository officielRepo;
     private final ProduitRepository productRepo;
     private final UtilisateurRepository userRepo;
+    private final SignalementRepository reportRepo;
 
     public MerchantPriceController(CommercantRepository merchantRepo, PrixDeclareRepository declareRepo,
                                     PrixOfficielRepository officielRepo, ProduitRepository productRepo,
-                                    UtilisateurRepository userRepo) {
+                                    UtilisateurRepository userRepo, SignalementRepository reportRepo) {
         this.merchantRepo = merchantRepo; this.declareRepo = declareRepo;
         this.officielRepo = officielRepo; this.productRepo = productRepo;
-        this.userRepo = userRepo;
+        this.userRepo = userRepo; this.reportRepo = reportRepo;
+    }
+
+    /**
+     * GET /api/merchant/reports — cas d'utilisation "Consulter les signalements reçus"
+     * (Figure 4 du Chapitre 3). Renvoie les signalements de consommateurs qui
+     * concernent la boutique du commerçant connecté.
+     */
+    @GetMapping("/reports")
+    public ResponseEntity<?> getMyShopReports(Authentication auth) {
+        Commercant shop = currentShop(auth);
+        if (shop == null) return ResponseEntity.ok(List.of());
+
+        return ResponseEntity.ok(reportRepo.findByMerchant_IdOrderByCreatedAtDesc(shop.getId())
+            .stream().map(r -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", r.getId());
+                m.put("productName", r.getProduct().getName());
+                m.put("priceObserved", r.getPriceObserved());
+                m.put("officialPrice", r.getOfficialPrice());
+                m.put("description", r.getDescription());
+                m.put("status", r.getStatus().name());
+                m.put("priority", r.getPriority().name());
+                m.put("createdAt", r.getCreatedAt().toString());
+                // Le nom du consommateur n'est volontairement pas exposé (protection des données personnelles)
+                return m;
+            }).toList());
     }
 
     /** GET /api/merchant/shop — la boutique du commerçant connecté */

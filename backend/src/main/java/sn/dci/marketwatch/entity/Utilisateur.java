@@ -28,6 +28,11 @@ public class Utilisateur {
     @Column(name = "region")
     private String region;
 
+    /** Compte actif ou désactivé par un Admin (cas d'utilisation "Gérer les utilisateurs et les rôles"). */
+    @Builder.Default
+    @Column(name = "actif", nullable = false)
+    private Boolean active = true;
+
     @Builder.Default
     @Column(name = "cree_le", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

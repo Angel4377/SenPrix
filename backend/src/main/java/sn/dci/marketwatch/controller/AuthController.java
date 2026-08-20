@@ -80,6 +80,11 @@ public class AuthController {
                 "email",        userDetails.getUsername(),
                 "role",         userDetails.getRole()
             ));
+        } catch (DisabledException e) {
+            auditService.log(JournalAudit.Action.LOGIN_FAILED,
+                    "Compte desactive : " + req.getEmail(), request);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Ce compte a été désactivé par un administrateur."));
         } catch (BadCredentialsException e) {
             auditService.log(JournalAudit.Action.LOGIN_FAILED,
                     "Tentative echouee pour : " + req.getEmail(), request);

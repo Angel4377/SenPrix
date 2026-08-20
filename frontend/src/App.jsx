@@ -14,12 +14,13 @@ import AdminMap       from './pages/admin/Map'
 import AdminImport    from './pages/admin/Import'
 import AdminAnalytics  from './pages/admin/Analytics'
 import AdminAuditLogs from './pages/admin/AuditLogs'
+import AdminUsers      from './pages/admin/Users'
+import AdminAlertConfig from './pages/admin/AlertConfig'
 
 // Consumer
 import ConsumerHome         from './pages/consumer/Home'
 import ConsumerReport       from './pages/consumer/ReportForm'
 import ConsumerCompare      from './pages/consumer/Compare'
-import ConsumerGamification from './pages/consumer/Gamification'
 import ConsumerMyReports    from './pages/consumer/MyReports'
 
 // Agent
@@ -29,7 +30,8 @@ import AgentMap        from './pages/agent/Map'
 import AgentInfraction from './pages/agent/Infraction'
 
 // Merchant
-import MerchantPrices from './pages/merchant/Prices'
+import MerchantPrices  from './pages/merchant/Prices'
+import MerchantReports from './pages/merchant/Reports'
 
 function ProtectedRoute({ children, role }) {
   const { user } = useAuth()
@@ -65,8 +67,10 @@ export default function App() {
             <Route path="reports"    element={<AdminReports />} />
             <Route path="map"        element={<AdminMap />} />
             <Route path="import"     element={<AdminImport />} />
-            <Route path="analytics"  element={<AdminAnalytics />} />
-            <Route path="audit-logs" element={<AdminAuditLogs />} />
+            <Route path="analytics"    element={<AdminAnalytics />} />
+            <Route path="audit-logs"   element={<AdminAuditLogs />} />
+            <Route path="users"        element={<AdminUsers />} />
+            <Route path="alert-config" element={<AdminAlertConfig />} />
           </Route>
 
           {/* ── CONSUMER ── */}
@@ -74,7 +78,6 @@ export default function App() {
             <Route path="home"         element={<ConsumerHome />} />
             <Route path="report"       element={<ConsumerReport />} />
             <Route path="compare"      element={<ConsumerCompare />} />
-            <Route path="gamification" element={<ConsumerGamification />} />
             <Route path="my-reports"   element={<ConsumerMyReports />} />
           </Route>
 
@@ -88,7 +91,8 @@ export default function App() {
 
           {/* ── MERCHANT ── */}
           <Route path="/merchant" element={<ProtectedRoute role="MERCHANT"><Layout /></ProtectedRoute>}>
-            <Route path="prices" element={<MerchantPrices />} />
+            <Route path="prices"  element={<MerchantPrices />} />
+            <Route path="reports" element={<MerchantReports />} />
           </Route>
 
           {/* ── NOTIFICATIONS (tous rôles) ── */}
